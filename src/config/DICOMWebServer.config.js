@@ -39,7 +39,7 @@ export default {
 //         enableHTTPS: true,
 //         hostname: "dicomwebproxy-bqmq3usc3a-uc.a.run.app",
 //         port: "",
-//         pathname: "dicomWeb",
+//         pathname: "/dicomWeb",
 //         Token: null,
 //     },
 //     WADO: {
