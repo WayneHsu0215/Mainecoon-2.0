@@ -2,17 +2,17 @@ export default {
     PACS_NAME: {
         QIDO: {
             enableHTTPS: true,
-            hostname: "pacs server hostname",
+            hostname: "hostname",
             port: "port",
-            pathname: "pacs server pathname",
+            pathname: "pathname",
             Token: null
         },
         WADO: {
             enableHTTPS: true,
-            hostname: "pacs server hostname",
+            hostname: "hostname",
             port: "port",
-            URI_pathname: "pacs server WADO-URI pathname",
-            RS_pathname: "pacs server WADO-RS pathname",
+            URI_pathname: "WADO-URI pathname",
+            RS_pathname: "WADO-RS pathname",
             Mode: "rs",
             Token: null
         }
