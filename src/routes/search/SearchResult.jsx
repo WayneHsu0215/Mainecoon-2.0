@@ -19,7 +19,13 @@ const SearchResult = ({qidorsSingleStudy}) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const result = await fetch(`${combineUrl(server)}/studies/${studyInstanceUID}/series`)
+                const result = await fetch(`${combineUrl(server)}/studies/${studyInstanceUID}/series`, {
+                    'method': 'GET',
+                    'headers': {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getAccessToken()}`
+                    },
+                })
                 const metadatas = await result.json();
                 setPreviewImage(metadatas?.map((metadata) => {
                     const Attribute = metadata?.["00080060"]?.Value;

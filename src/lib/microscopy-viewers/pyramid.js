@@ -8,6 +8,7 @@ import View from 'ol/View';
 import { XYZ } from 'ol/source';
 import { getCenter } from 'ol/extent';
 import { toDicomWebUrl } from '../dicom-webs';
+import { getAccessToken } from '../../token.js';
 
 const decodeCoordinatesData = (encodedData, vr) => {
     let buffer;
@@ -250,9 +251,28 @@ export const computePyramidInfo = (baseUrl, studyUid, seriesUid, images) => {
         source: new XYZ({
             tileLoadFunction: (tile, src) => {
                 const image = tile.getImage();
-                // console.log("image",image)
-                image.src = src;
-                image.fetchPriority = 'high';
+                // // console.log("image",image)
+                // image.src = src;
+                // image.fetchPriority = 'high';
+                const accessToken = getAccessToken(); // 将your_access_token_here替换为实际的access token值
+
+                fetch(src, {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    image.src = URL.createObjectURL(blob);
+                })
+                .catch(error => {
+                    console.error('There has been a problem with your fetch operation:', error);
+                });
             },
             tileUrlFunction: ([z, x, y]) => {
                 const { instanceUID, totalPixelMatrixColumns, columns } = images[z];
