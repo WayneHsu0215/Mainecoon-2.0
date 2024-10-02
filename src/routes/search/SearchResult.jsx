@@ -3,6 +3,7 @@ import {Icon} from "@iconify/react";
 import {combineUrl, fetchPatientDetails} from "../../lib/search/index.js";
 import {ServerContext} from "../../lib/ServerContext.jsx";
 import {Link} from "react-router-dom";
+import { getAccessToken } from "../../token.js";
 
 const SearchResult = ({qidorsSingleStudy}) => {
 

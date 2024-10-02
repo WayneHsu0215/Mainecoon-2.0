@@ -106,23 +106,25 @@ function fetchPatientDetails(data){
     return {patientID,patientName,patientBirthDate,patientSex,accessionNumber,studyDate,studyTime,studyInstanceUID}
 }
 
-const hasNext = (parameter) => {
-    const searchParams = new URLSearchParams({ [QIDO_RS_Response.ModalitiesInStudy]: 'SM' });
-    if (parameter.PatientID) searchParams.set(QIDO_RS_Response.PatientID, parameter.PatientID);
-    if (parameter.PatientName) searchParams.set(QIDO_RS_Response.PatientName, parameter.PatientName);
-    if (parameter.StudyInstanceUID) searchParams.set(QIDO_RS_Response.StudyInstanceUID, parameter.StudyInstanceUID);
-    if (parameter.AccessionNumber) searchParams.set(QIDO_RS_Response.AccessionNumber, parameter.AccessionNumber);
-    if (parameter.StudyDate) searchParams.set(QIDO_RS_Response.StudyDate, parameter.StudyDate);
+
+// const hasNext = (parameter) => {
+//     const searchParams = new URLSearchParams({ [QIDO_RS_Response.ModalitiesInStudy]: 'SM' });
+//     if (parameter.PatientID) searchParams.set(QIDO_RS_Response.PatientID, parameter.PatientID);
+//     if (parameter.PatientName) searchParams.set(QIDO_RS_Response.PatientName, parameter.PatientName);
+//     if (parameter.StudyInstanceUID) searchParams.set(QIDO_RS_Response.StudyInstanceUID, parameter.StudyInstanceUID);
+//     if (parameter.AccessionNumber) searchParams.set(QIDO_RS_Response.AccessionNumber, parameter.AccessionNumber);
+//     if (parameter.StudyDate) searchParams.set(QIDO_RS_Response.StudyDate, parameter.StudyDate);
 
 
-    const fetchNext = fetch(`${combineUrl(server)}/studies?limit=${1}&offset=${parameter.offset + parameter.limit}`,{
-        mode: 'cors',
-        headers: {
-            'Access-Control-Allow-Origin':'*'
-        }
-    })
-    return fetchNext
-}
+//     const fetchNext = fetch(`${combineUrl(server)}/studies?limit=${1}&offset=${parameter.offset + parameter.limit}`,{
+//         mode: 'cors',
+//         headers: {
+//             'Access-Control-Allow-Origin':'*'
+//         }
+//     })
+//     return fetchNext
+// }
+
 
 
 
