@@ -1,22 +1,22 @@
 export default {
-    SONGYI_RACCOON:{
-        QIDO: {
-            enableHTTPS: true,
-            hostname: "dicomwsi.dicom.tw",
-            port: "",
-            pathname: "/dicom-web",
-            Token: null
-        },
-        WADO: {
-            enableHTTPS: true,
-            hostname: "dicomwsi.dicom.tw",
-            port: "",
-            URI_pathname: "/dicom-web/wado",
-            RS_pathname: "/dicom-web",
-            Mode: "rs",
-            Token: null
-        }
-    },
+    // SONGYI_RACCOON:{
+    //     QIDO: {
+    //         enableHTTPS: true,
+    //         hostname: "dicomwsi.dicom.tw",
+    //         port: "",
+    //         pathname: "/dicom-web",
+    //         Token: null
+    //     },
+    //     WADO: {
+    //         enableHTTPS: true,
+    //         hostname: "dicomwsi.dicom.tw",
+    //         port: "",
+    //         URI_pathname: "/dicom-web/wado",
+    //         RS_pathname: "/dicom-web",
+    //         Mode: "rs",
+    //         Token: null
+    //     }
+    // },
     DITTO: {
         QIDO: {
             enableHTTPS: true,
