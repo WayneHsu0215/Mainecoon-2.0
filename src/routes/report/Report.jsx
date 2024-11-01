@@ -1,77 +1,94 @@
-import React from "react"
+import React, { useState, useEffect } from "react";
+import { Icon } from "@iconify/react";
 
+const Report = ({ ReportOpen, title, seriesInstanceUID, diagnosticReportUrl }) => {
+    const [changeToJson, setChangeToJson] = useState(false);
+    const [jsonContent, setJsonContent] = useState(null);
 
-const Report = ({title, seriesInstanceUID, diagnosticReportUrl}) => {
-    // const imageWithReportSlice = useAppSelector((state) => state.imageWithReportSlice);
-    // const seriesResults = imageWithReportSlice.imageResult?.Series;
-    // const seriesResult = seriesResults[_.findIndex(seriesResults, {uid: seriesInstanceUID})];
-    // const metadata = _.first(seriesResult?.metadata);
-    // const modalityAttribute: string = _.get(_.get(metadata, "00080060"), "Value");
-    // const studyInstanceUID: string = _.get(_.get(metadata, "0020000D"), "Value");
-    // const navigate = useNavigate();
-    //
-    // function OnClick() {
-    //     if (_.isEmpty(studyInstanceUID) && _.isEmpty(seriesInstanceUID)) {
-    //         console.log("UID Empty Error");
-    //         console.log("studyInstanceUID", studyInstanceUID);
-    //         console.log("seriesInstanceUID", seriesInstanceUID);
-    //         return;
-    //     }
-    //     navigate(`../WSIViewerWithReport/${studyInstanceUID}/${seriesInstanceUID}/${modalityAttribute}`);
-    // }
+    const handleReportChangeToJson = () => {
+        setChangeToJson(!changeToJson);
+    };
 
+    useEffect(() => {
+        const fetchJsonData = async () => {
+            try {
+                const response = await fetch("ImagingStudy.json");
+                const data = await response.json();
+                setJsonContent(data);
+            } catch (error) {
+                console.error("Error fetching JSON data:", error);
+            }
+        };
 
-    return <>
-        <div className="w-1/2 mx-3 mb-3 mt-2">
-            <div className="h-full w-full border-2 border-black rounded-2xl">
-                <div className="flex flex-col w-full h-full">
-                    <div className="p-2 m-2 overflow-y-auto scrollbar-thin-report">
-                        <p className="font-bold text-md bg-green-300 mt-1 mb-1 p-2">Gross Finding</p>
-                        <p className="mx-3 text-sm mt-2">The specimen received consists of two parts.
-                            Part (A) is a wedge - shaped lung tissue labeled "LUL wedge"measuring 8.2 x 3.5 x 3.0 cm. A
-                            gray
-                            white tumor,1.4 x 1.1 x 1.1 cm, is noted 1.5 cm
-                            from the stapled margin,0.9 cm from the visceral pleura.
-                            The non - tumorous parenchyma is congested and hemorrhagic.
+        fetchJsonData();
+    }, []);
 
-                            Part (B)
-                            consists of lymph nodes labeled as above.Representative parts are
-                            taken for sections in 7 blocks.
-                            (A:stapled margin,R-C : tumor ,
-                            D:non-tumorous parenchyma,
-                            E:para-aortic LNs, F:subaortic,
-                            G:inferior pulmonary ligament LNs) (CYC)</p>
+    const handleDownloadJson = (data) => {
+        const jsonBlob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+        const downloadLink = document.createElement("a");
+        downloadLink.href = URL.createObjectURL(jsonBlob);
+        downloadLink.download = "reportData.json";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    };
 
-                        <p className="font-bold text-md bg-green-300 mt-1 mb-1 p-2">Microscopic Finding</p>
-                        <ol className="text-sm mt-3 list-decimal list-inside pl-4">
-                            <li>Histologic type : Minimally invasive adenocarcinoma</li>
-                            <li>Histologic pattern : lepidic (70%), acinar (30%)</li>
-                            <li>Cell type: non-mucinous tumor cells</li>
-                            <li>Total tumor size: 1.4 x 1.1 x 1.1 cn</li>
-                            <li>Size of invasive focus: O.4 cm</li>
-                            <li>Tumor differentiation: well differentiated (G1)</li>
-                            <li>Angiolymphatic invasion: absent</li>
-                            <li>Perineural invasion: absent</li>
-                            <li>Spread Through Air Spaces (STAS): absent. </li>
-                            <li>Tumor necrosis: absent</li>
-                            <li>Pleural invasion:: absent (PLO)</li>
-                            <li>Resection margin: free of tumor involvement. </li>
-                            <li>Lymph nodes: all without metastatic tumor</li>
-                            <li>Non-tumorous parenchyma: congestion</li>
-                            <li>Pathological staging: pT1miNO (AJCC 8th edition).</li>
-                        </ol>
+    return (
+        <div className="w-1/2 border-2 border-gray-400 ">
+            <div className="bg-green-300 p-2  flex justify-between items-center">
+                <p className="font-bold text-md">Report</p>
+                <div className="flex gap-2">
+                    <button
+                        className=" text-gray-700 underline font-semibold rounded-md px-2 py-1 text-xs"
+                        onClick={handleReportChangeToJson}
+                    >
+                        {changeToJson ? "Report" : "Raw Data"}
+                    </button>
+                    {changeToJson && (
+                        <button
+                            className=" text-gray-700 underline font-semibold rounded-md px-2 py-1 text-xs flex items-center"
+                            onClick={() => handleDownloadJson(jsonContent)}
+                        >
+                            <Icon icon="material-symbols:download-sharp" className="mr-1"/> Download JSON
+                        </button>
+                    )}
+                    <button
+                        className="bg-gray-400 hover:bg-gray-600 text-white font-semibold rounded-md px-2 py-1 text-xs"
+                        onClick={ReportOpen}
+                    >
+                        {'<<'}
+                    </button>
+                </div>
 
-                        <p className="font-bold text-md bg-green-300 mt-1 mb-1 p-2">Diagnosis</p>
-                        <ol className="text-sm list-decimal list-inside pl-4 mt-3">
-                            <li>Squamous cell carcinoma, left floor of mouth</li>
-                            <li>Squamous cell carcinoma, in extranodal connective tissue of neck at level III</li>
-                            <li>Nineteen cervical lymph nodes, no pathologic diagnosis.</li>
-                        </ol>
-                    </div>
+            </div>
+            <div className="h-full w-full  rounded-b-2xl flex flex-col">
+                <div className="p-2 m-2 overflow-y-auto scrollbar-thin-report">
+                    {!changeToJson ? (
+                        <p className="mx-3 text-sm mt-2">
+                            Age: 68 Sex: M<br/><br/>
+                            PATHOLOGIC DIAGNOSIS:<br/>
+                            Liver, needle biopsy: Fatty metamorphosis.<br/><br/>
+                            GROSS FINDING:<br/>
+                            The specimen is a liver tissue fragment measuring 1.1 x 0.1 x 0.1 cm. It is gray and
+                            soft.<br/><br/>
+                            All for section, one cassette.<br/><br/>
+                            MICROSCOPIC FINDING:<br/>
+                            Section shows localized macrovesicular fatty change of liver with an increase of vascularity
+                            and a few inflammatory cell infiltration. The portal area and parenchyma show mild and
+                            non-specific changes. There is no evidence of apparent malignancy. Both immunostaining for
+                            glypican-3 and AFP are negative.<br/><br/>
+                            *T56000, 1, M50080<br/><br/>
+                            Pathologists: 周楠華醫師 病解專醫字第97號
+                        </p>
+                    ) : (
+                        <pre
+                            className="text-xs mt-2 whitespace-pre-wrap overflow-auto">{jsonContent ? JSON.stringify(jsonContent, null, 2) : "Loading..."}</pre>
+
+                    )}
                 </div>
             </div>
         </div>
-    </>
-}
+    );
+};
 
 export {Report};
