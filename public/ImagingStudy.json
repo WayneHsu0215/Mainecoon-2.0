@@ -16,10 +16,7 @@
           "https://hapi.fhir.tw/fhir/StructureDefinition/NASH-DiagnosticReport"
         ]
       },
-      "text": {
-        "status": "generated",
-        "div":"  Age: 68   Sex: M\\r\\n\\r\\nPATHOLOGIC DIAGNOSIS:\\r\\nLiver, needle biopsy: Fatty metamorphosis.\\r\\n\\r\\nGROSS FINDING:\\r\\nThe specimen is a liver tissue fragment measuring 1.1 x\\r\\n0.1 x 0.1 cm. It is gray and soft.\\r\\n\\r\\nAll for section, one cassette.\\r\\n\\r\\n\\r\\nMICROSCOPIC FINDING:\\r\\nSection shows localized macrovesicular fatty change of\\r\\nliver with an increase of vascularity and a few\\r\\ninflammatory cell infiltration. The portal area and\\r\\nparenchyma show mild and non-specific changes.\\r\\nThere is no evidence of apparent malignancy. Both\\r\\nimmunostaining for glypican-3 and AFP are negative.\\r\\n\\r\\n\\r\\n\\r\\n  *T56000, 1, M50080\\r\\n\\r\\n\\r\\nPathologists: 周楠華醫師  病解專醫字第97號\n"
-      },
+
       "identifier": [
         {
           "system": "https://www.vghtpe.gov.tw/",
@@ -57,17 +54,7 @@
           "reference": "ImagingStudy/ImagingStudyBase"
         }
       ],
-      "presentedForm": [
-        {
-          "contentType": "application/pdf",
-          "language": "en",
-          "data": "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",
-          "size": 1941,
-          "hash": "kl1IslzTX//bit4WdBFGjvbZBtw=",
-          "title": "Nash Report",
-          "creation": "2024-11-01T07:21:08.427Z"
-        }
-      ]
+      "conclusion" : "Age: 68 Sex: M\n\nPATHOLOGIC DIAGNOSIS:\nLiver, needle biopsy: Fatty metamorphosis.\n\nGROSS FINDING:\nThe specimen is a liver tissue fragment measuring 1.1 x 0.1 x 0.1 cm. It is gray and soft.\n\nAll for section, one cassette.\n\nMICROSCOPIC FINDING:\nSection shows localized macrovesicular fatty change of liver with an increase of vascularity and a few inflammatory cell infiltration. The portal area and parenchyma show mild and non-specific changes. There is no evidence of apparent malignancy. Both immunostaining for glypican-3 and AFP are negative.\n\n*T56000, 1, M50080\n\nPathologists: 周楠華醫師 病解專醫字第97號"
     },
     {
       "resource": {
