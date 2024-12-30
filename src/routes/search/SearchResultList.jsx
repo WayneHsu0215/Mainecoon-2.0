@@ -20,13 +20,13 @@ const SearchResultList = ({searchResults, isLoading}) => {
                         </tr>
                         </thead>
                         <tbody>
-                        {!isLoading && searchResults.length === 0 ? (
+                        {!isLoading && searchResults?.length === 0 ? (
                             <td colSpan={8} className="text-center">
                                 <p className="p-5 text-xl font-serif">No Results Found</p>
                             </td>
                         ) : (
-                            searchResults.map((result) => {
-                                return ( <SearchResult key={result.id} Result={result}/> );
+                            searchResults?.map((result) => {
+                                return ( <SearchResult key={result.id} Result={result} locate={'search'} /> );
                             }))}
                         </tbody>
                     </table>

@@ -72,5 +72,11 @@
     border: 1px solid rgba(0,0,0,0.7);
 }
 
+.custom-overview-map {
+    border: 2px solid white; /* 设置白色边框 */
+    border-radius: 5px; /* 可选：圆角 */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* 可选：添加阴影 */
+}
+
 
 

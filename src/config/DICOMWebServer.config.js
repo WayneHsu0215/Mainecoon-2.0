@@ -17,17 +17,17 @@ export default {
     //         Token: null
     //     }
     // },
-    NewRaccoon: {
+    DITTO:{
         QIDO: {
-            enableHTTPS: true,
-            hostname: "ditto-tmp.dicom.tw",
+            enableHTTPS: false,
+            hostname: "ditto.dicom.tw",
             port: "",
             pathname: "/dicom-web",
             Token: null
         },
         WADO: {
-            enableHTTPS: true,
-            hostname: "ditto-tmp.dicom.tw",
+            enableHTTPS: false,
+            hostname: "ditto.dicom.tw",
             port: "",
             URI_pathname: "/dicom-web/wado",
             RS_pathname: "/dicom-web",
@@ -35,20 +35,38 @@ export default {
             Token: null
         }
     },
-    // PACS_MITW: {
+    // NewRaccoon: {
     //     QIDO: {
-    //         enableHTTPS: false,
-    //         hostname: "172.18.0.53",
-    //         port: "10000",
-    //         pathname: "/dcm4chee-arc/aets/DCM4CHEE/rs",
+    //         enableHTTPS: true,
+    //         hostname: "ditto-tmp.dicom.tw",
+    //         port: "",
+    //         pathname: "/dicom-web",
     //         Token: null
     //     },
     //     WADO: {
-    //         enableHTTPS: false,
-    //         hostname: "172.18.0.53",
+    //         enableHTTPS: true,
+    //         hostname: "ditto-tmp.dicom.tw",
+    //         port: "",
+    //         URI_pathname: "/dicom-web/wado",
+    //         RS_pathname: "/dicom-web",
+    //         Mode: "rs",
+    //         Token: null
+    //     }
+    // },
+    // PACS_MITW: {
+    //     QIDO: {
+    //         enableHTTPS: true,
+    //         hostname: "raccoon.siweiyang.com",
+    //         port: "43",
+    //         pathname: "/dicom-web",
+    //         Token: null
+    //     },
+    //     WADO: {
+    //         enableHTTPS: true,
+    //         hostname: "raccoon.siweiyang.com",
     //         port: "10000",
-    //         URI_pathname: "/dcm4chee-arc/aets/DCM4CHEE/wado",
-    //         RS_pathname: "/dcm4chee-arc/aets/DCM4CHEE/rs",
+    //         URI_pathname: "/dicom-web",
+    //         RS_pathname: "/dicom-webs",
     //         Mode: "rs",
     //         Token: null
     //     }

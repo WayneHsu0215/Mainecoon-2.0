@@ -5,7 +5,7 @@ import {ServerContext} from "../../lib/ServerContext.jsx";
 import {Link} from "react-router-dom";
 import {getAccessToken} from "../../token.js";
 
-function Thumbnail({ seriesUid, studyUid, server }) {
+function Thumbnail({seriesUid, studyUid, server}) {
     const [thumbnailUrl, setThumbnailUrl] = useState('');
 
     useEffect(() => {
@@ -53,12 +53,14 @@ function Thumbnail({ seriesUid, studyUid, server }) {
 }
 
 
-const SearchResult = ({Result}) => {
+const SearchResult = ({Result, locate, moreInfo}) => {
     const [previewImage, setPreviewImage] = useState([]);
     const patientDetails = fetchPatientDetails(Result);
     const studyInstanceUID = patientDetails.studyInstanceUID;
     const [seriesUID, setSeriesUID] = useState('');
     const [server, setServer] = useContext(ServerContext);
+
+
     const [oauthToken, setOauthToken] = useState('');
 
     function OnClick() {
@@ -78,15 +80,13 @@ const SearchResult = ({Result}) => {
         fetchToken();
     }, []);
 
-    const [ann,setAnn] = useState(0)
+    const [ann, setAnn] = useState(0)
     useEffect(() => {
-        let Y= 0;
+        let Y = 0;
         const fetchData = async () => {
             if (!oauthToken) return;
-
             try {
                 let seriesUid = []
-                // const result = await fetch(`${combineUrl(server)}/studies/${studyInstanceUID}/series`)
                 const result = await fetch(`${combineUrl(server)}/studies/${studyInstanceUID}/series`, {
                     'method': 'GET',
                     'headers': {
@@ -94,17 +94,16 @@ const SearchResult = ({Result}) => {
                         'Authorization': `Bearer ${oauthToken}`,
                     },
                 })
-
                 const metadatas = await result.json()
                 setPreviewImage(metadatas?.map((metadata) => {
                     const Attribute = metadata?.["00080060"]?.Value;
                     if (Attribute && Attribute.length > 0) {
-                        if (Attribute[0] === "SM"){
+                        if (Attribute[0] === "SM") {
                             seriesUid.push(metadata['0020000E'].Value?.[0])
-                            return ( metadata['0020000E'].Value?.[0] )
+                            return (metadata['0020000E'].Value?.[0])
                         }
-                        if(Attribute[0] === "ANN") {
-                            Y+=1
+                        if (Attribute[0] === "ANN") {
+                            Y += 1
                         }
                         return false
                     }
@@ -125,48 +124,98 @@ const SearchResult = ({Result}) => {
     }
 
     const gender = genderData[patientDetails.patientSex] || genderData.default;
+    console.log('previewImage:', previewImage);
+
 
     return (
         <>
-            <tr className="m-2 hover:bg-gray-100 cursor-pointer group max-h-2" key={patientDetails.patientID}
-                onClick={OnClick}>
-                <td className="border-2 border-l-0 group-first:border-t-0 p-2.5 group-last:border-b-0">{patientDetails.patientID}</td>
-                <td className="border-2 group-first:border-t-0 p-2.5 group-last:border-b-0">{patientDetails.patientName}</td>
-                <td className="border-2 w-1/12 p-2.5 text-center group-first:border-t-0 group-last:border-b-0">{patientDetails.patientBirthDate}</td>
-                <td className="border-2 w-10 p-2.5 text-center group-first:border-t-0 group-last:border-b-0">
-                    <div className="flex items-center justify-center">
-                        <div
-                            className={`rounded-md ${gender.bgColor} w-16 py-1 px-2  mx-auto flex items-center justify-center font-bold `}>
-                            {/*<Icon icon={gender.icon} width="24" height="24" className="text-white"/>*/}
-                            <span className="mx-2 text-white">{gender.label}</span>
+            {locate === 'search' ? (
+                <tr className="m-2 hover:bg-gray-100 cursor-pointer group max-h-2" key={patientDetails.patientID}
+                    onClick={OnClick}>
+                    <td className="border-2 border-l-0 group-first:border-t-0 p-2.5 group-last:border-b-0">{patientDetails.patientID}</td>
+                    <td className="border-2 group-first:border-t-0 p-2.5 group-last:border-b-0">{patientDetails.patientName}</td>
+                    <td className="border-2 w-1/12 p-2.5 text-center group-first:border-t-0 group-last:border-b-0">{patientDetails.patientBirthDate}</td>
+                    <td className="border-2 w-10 p-2.5 text-center group-first:border-t-0 group-last:border-b-0">
+                        <div className="flex items-center justify-center">
+                            <div
+                                className={`rounded-md ${gender.bgColor} w-16 py-1 px-2  mx-auto flex items-center justify-center font-bold `}>
+                                {/*<Icon icon={gender.icon} width="24" height="24" className="text-white"/>*/}
+                                <span className="mx-2 text-white">{gender.label}</span>
+                            </div>
                         </div>
-                    </div>
-                </td>
-                <td className="border-2 p-2.5 group-first:border-t-0 group-last:border-b-0">{patientDetails.accessionNumber}</td>
-                <td className="border-2 w-1/12 p-2.5 text-center group-first:border-t-0 group-last:border-b-0">{patientDetails.studyDate}</td>
-                <td className="border-2 w-1/12 p-2.5 text-center border-r-0 group-first:border-t-0 group-last:border-b-0">
-                    <div className="flex flex-wrap w-72">
-                        {previewImage?.map((seriesUid) => (
-                            <Link key={seriesUid}
-                                  className="mr-2"
-                                  onClick={(e) => {
-                                      e.stopPropagation()
-                                      location.href = `../viewer?server=${server}&studyUid=${studyInstanceUID}&seriesUid=${seriesUid}`
-                                  }}
-                            >
-                                {/* <img key={seriesUid}
+                    </td>
+                    <td className="border-2 p-2.5 group-first:border-t-0 group-last:border-b-0">{patientDetails.accessionNumber}</td>
+                    <td className="border-2 w-1/12 p-2.5 text-center group-first:border-t-0 group-last:border-b-0">{patientDetails.studyDate}</td>
+                    <td className="border-2 w-1/12 p-2.5 text-center border-r-0 group-first:border-t-0 group-last:border-b-0">
+                        <div className="flex flex-wrap w-72">
+                            {previewImage?.map((seriesUid) => (
+                                <Link key={seriesUid}
+                                      className="mr-2"
+                                      onClick={(e) => {
+                                          e.stopPropagation()
+                                          location.href = `../viewer?server=${server}&studyUid=${studyInstanceUID}&seriesUid=${seriesUid}`
+                                      }}
+                                >
+                                    {/* <img key={seriesUid}
                                     //  src={`${combineUrl(server)}/studies/${studyInstanceUID}/series/${seriesUid}/thumbnail`}
                                      src = {fetchThumbnail(seriesUid)}
                                      className="break-all border bg-white text-xs h-[70px] w-[70px] object-cover"
                                      alt={seriesUid}
                                 /> */}
-                                <Thumbnail seriesUid={seriesUid} studyUid={studyInstanceUID} server={server} />
-                            </Link>
-                        ))}
-                    </div>
-                </td>
-                {/*<td className="">{ann}</td>*/}
-            </tr>
+                                    <Thumbnail seriesUid={seriesUid} studyUid={studyInstanceUID} server={server}/>
+                                </Link>
+                            ))}
+                        </div>
+                    </td>
+                </tr>
+            ) : (
+                locate === 'viewer' && (
+                    previewImage?.map((seriesUid) => (
+                            <div key={seriesUid} onClick={OnClick} className="w-full">
+                                <div className="flex flex-row p-4 border border-gray-300 rounded-md m-1 shadow-sm bg-white hover:border-2 hover:border-green-500 transition-all duration-300 hover:shadow-sm hover:shadow-green-500 hover:bg-green-100">
+                                    {moreInfo && (
+                                        <div className="flex flex-wrap items-center w-28 shrink-0">
+                                            <div className="mr-2">
+                                                <Thumbnail seriesUid={seriesUid} studyUid={studyInstanceUID}
+                                                           server={server}/>
+                                            </div>
+                                        </div>
+                                    )}
+                                    <div className="flex justify-between items-center ">
+                                        <div className="items-center">
+                                            {moreInfo ? (
+                                                <div className="text-base text-gray-600 ">
+                                                    <div>
+                                                        Patient ID: <span
+                                                        className="break-all font-medium text-gray-800">{patientDetails.patientID}</span>
+                                                    </div>
+                                                    <div>
+                                                        Gender: <span
+                                                        className="font-medium text-gray-800">{patientDetails.patientSex}</span>
+                                                    </div>
+                                                    <div>
+                                                        Accession Number: <span
+                                                        className="break-all font-medium text-gray-800">{patientDetails.accessionNumber}</span>
+                                                    </div>
+                                                    <div>
+                                                        Study Date: <span
+                                                        className="font-medium text-gray-800">{patientDetails.studyDate}</span>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className="text-gray-600 ">
+                                                <span
+                                                    className="break-all text-base font-medium text-gray-800">{patientDetails.patientID}</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )
+                    ))
+            )}
+
         </>
     );
 }

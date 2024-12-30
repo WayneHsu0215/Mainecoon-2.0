@@ -8,6 +8,7 @@ import {ServerProvider} from "./lib/ServerContext.jsx";
 import {AnnotationsProvider} from "./lib/AnnotaionsContext.jsx";
 import {ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import {ImageProvider} from "./lib/ImageContext.jsx";
 
 
 const Main = () => {
@@ -25,7 +26,9 @@ const Main = () => {
 
 createRoot(document.getElementById('root')).render(
     <ServerProvider>
-        <AnnotationsProvider>
-            <Main/>
-        </AnnotationsProvider>
+        <ImageProvider>
+            <AnnotationsProvider>
+                <Main/>
+            </AnnotationsProvider>
+        </ImageProvider>
     </ServerProvider>);

@@ -839,5 +839,5 @@ export function lightenColor(color) {
 //     return color;
 // };
 export const getRandomColor = () => {
-    return 'rgb(244,214,19)';
+    return 'rgb(255,67,67)';
 };

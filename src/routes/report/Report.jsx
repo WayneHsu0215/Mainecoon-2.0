@@ -34,7 +34,7 @@ const Report = ({ ReportOpen, title, seriesInstanceUID, diagnosticReportUrl }) =
     };
 
     return (
-        <div className="w-1/2 border-2 border-gray-400 ">
+        <div className="w-1/2 border-r border-gray-400 ">
             <div className="bg-green-300 p-2  flex justify-between items-center">
                 <p className="font-bold text-md">Report</p>
                 <div className="flex gap-2">

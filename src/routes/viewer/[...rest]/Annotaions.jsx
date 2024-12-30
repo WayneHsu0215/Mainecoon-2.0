@@ -123,7 +123,7 @@ const Annotations = ({Layers, Loading, onMessageChange, CurrentDraw,handleDelete
                     const {group, editable, accessionNumber, status} = annotations[0];
                     return (
                         <div key={seriesUid} className="text-sm font-medium">
-                            <div className="flex items-center bg-green-100 border-b border-gray-200/50"
+                            <div className="flex items-center border-b border-gray-200/50"
                                  onClick={() => handleGroupStatus(seriesUid)}>
                                 {!Loading ? (
                                     <input

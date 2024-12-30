@@ -6,6 +6,7 @@ import {ServerContext} from "../../lib/ServerContext.jsx";
 import SearchForm from "./SearchForm.jsx";
 import {CombineSearchURL} from "../../lib/search/index.js";
 import {Icon} from "@iconify/react";
+import {ImageContext} from "../../lib/ImageContext.jsx";
 
 const SearchPageHeader = ({setSearchResults, pageLimit, pageOffset, setHandleNextPageChange,setIsLoading}) => {
     const [server, setServer] = useContext(ServerContext)
@@ -22,6 +23,7 @@ const SearchPageHeader = ({setSearchResults, pageLimit, pageOffset, setHandleNex
         StudyInstanceUID: undefined,
         StudyID: undefined
     })
+    const [image, setImage] = useContext(ImageContext);
 
 
     useEffect(() => {
@@ -50,6 +52,8 @@ const SearchPageHeader = ({setSearchResults, pageLimit, pageOffset, setHandleNex
                 } else {
                     setHandleNextPageChange(true);
                 }
+                console.log('data:', data);
+                setImage(data)
                 setSearchResults(data);
                 setIsLoading(false);
             })

@@ -22,7 +22,8 @@ const ViewerPageHeader = ({
                               onMessageChange,
                               studyUid,
                               seriesUid,
-                              imageLoading
+                              imageLoading,
+                              handleInfoOpen
                           }) => {
     const [saveAnnotations, setSaveAnnotations] = save;
     const [isLeftDrawerOpen, setIsLeftDrawerOpen] = isLeftOpen;
@@ -161,7 +162,6 @@ const ViewerPageHeader = ({
             });
     };
 
-
     const mouseOnFun = () => {
         setIsMouseOn(!isMouseOn);
     };
@@ -237,42 +237,33 @@ const ViewerPageHeader = ({
                         {/*<div>*/}
                         {/*    <button*/}
                         {/*        className="flex bg-white hover:bg-yellow-500 rounded-lg p-1.5 mr-1 mb-1 block"*/}
-                        {/*        onClick={() => setIsShowReport(!isShowReport)}>*/}
-                        {/*        <Icon icon="tabler:report" width="18" height="18"/>*/}
-                        {/*        <span className="sm:inline hidden ml-1">Report</span>*/}
+                        {/*        ref={myPatientDetailsRef} onMouseOver={mouseOnPatientFun}*/}
+                        {/*        onMouseLeave={mouseOutPatientFun}>*/}
+                        {/*        <Icon icon="bi:people-circle" width="18" height="18"/>*/}
+                        {/*        <span className="sm:inline hidden ml-1">Patient</span>*/}
                         {/*    </button>*/}
+                        {/*    <div className={`relative bg-white z-10 ${isMouseOnPatient ? '' : 'hidden'}`}>*/}
+                        {/*        <PatientDetails detail={detail} label={"Patient"} style={"ViewerHeader"}/>*/}
+                        {/*    </div>*/}
                         {/*</div>*/}
                         {/*<div>*/}
                         {/*    <button*/}
                         {/*        className="flex bg-white hover:bg-yellow-500 rounded-lg p-1.5 mr-1 mb-1 block"*/}
-                        {/*        onClick={() => setIsLeftDrawerOpen(!isLeftDrawerOpen)}>*/}
-                        {/*        <Icon icon="fluent:pane-open-24-regular" width="18" height="18"/>*/}
-                        {/*        <span className="sm:inline hidden ml-1">All</span>*/}
+                        {/*        ref={myCaseDetailsRef} onMouseOver={mouseOnCaseFun}*/}
+                        {/*        onMouseLeave={mouseOutCaseFun}*/}
+                        {/*    ><Icon icon="fluent:document-data-16-filled" width="20" height="20"/>*/}
+                        {/*        <span className="sm:inline hidden ml-1">Study</span>*/}
                         {/*    </button>*/}
+                        {/*    <div className={`relative bg-white z-10 ${isMouseOnCase ? '' : 'hidden'}`}>*/}
+                        {/*        <PatientDetails detail={detail} label={"Study"} style={"ViewerHeader"}/>*/}
+                        {/*    </div>*/}
                         {/*</div>*/}
                         <div>
                             <button
-                                className="flex bg-white hover:bg-yellow-500 rounded-lg p-1.5 mr-1 mb-1 block"
-                                ref={myPatientDetailsRef} onMouseOver={mouseOnPatientFun}
-                                onMouseLeave={mouseOutPatientFun}>
-                                <Icon icon="bi:people-circle" width="18" height="18"/>
-                                <span className="sm:inline hidden ml-1">Patient</span>
+                                className="flex bg-white hover:bg-yellow-500 rounded-lg p-2 mr-1 mb-1 " onClick={handleInfoOpen}>
+                                <Icon icon="fluent:document-data-16-filled" width="20" height="20"/>
+                                <span className="sm:inline hidden ml-1">INFO</span>
                             </button>
-                            <div className={`relative bg-white z-10 ${isMouseOnPatient ? '' : 'hidden'}`}>
-                                <PatientDetails detail={detail} label={"Patient"} style={"ViewerHeader"}/>
-                            </div>
-                        </div>
-                        <div>
-                            <button
-                                className="flex bg-white hover:bg-yellow-500 rounded-lg p-1.5 mr-1 mb-1 block"
-                                ref={myCaseDetailsRef} onMouseOver={mouseOnCaseFun}
-                                onMouseLeave={mouseOutCaseFun}
-                            ><Icon icon="fluent:document-data-16-filled" width="20" height="20"/>
-                                <span className="sm:inline hidden ml-1">Study</span>
-                            </button>
-                            <div className={`relative bg-white z-10 ${isMouseOnCase ? '' : 'hidden'}`}>
-                                <PatientDetails detail={detail} label={"Study"} style={"ViewerHeader"}/>
-                            </div>
                         </div>
                     </div>
 
@@ -287,7 +278,7 @@ const ViewerPageHeader = ({
                         <div className="flex flex-row gap-2">
                             <button className="bg-white hover:bg-yellow-500 rounded-lg p-1.5 mr-1 mb-1 block"
                                     onClick={() => handleDraw('cancel', '')}>
-                                <Icon icon="fa6-regular:hand" className="text-black h-5 w-5"/>
+                            <Icon icon="fa6-regular:hand" className="text-black h-5 w-5"/>
                             </button>
                             {/*<button className="relative bg-white hover:bg-yellow-500 rounded-lg p-1.5 mr-1 mb-1 block">*/}
                             {/*    <label className="contents ">*/}

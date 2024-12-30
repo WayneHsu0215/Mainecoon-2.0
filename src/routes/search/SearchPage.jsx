@@ -2,7 +2,6 @@ import {useState} from 'react';
 import {SearchResultList} from "../search/SearchResultList.jsx";
 import {Icon} from "@iconify/react";
 import SearchPageHeader from "./SearchPageHeader.jsx";
-
 const Main = () => {
     const [pageLimit, setPageLimit] = useState(10);
     const [pageOffset, setPageOffset] = useState(0);

@@ -40,7 +40,29 @@ export default {
                 },
                 ".custom-height": {
                     height: "calc(90vh - 5rem)"
-                }
+                },
+                ".loading": {
+                    width: "124px",
+                    height: "24px",
+                    "-webkit-mask":
+                        "conic-gradient(from 135deg at top, #0000, #000 .5deg 90deg, #0000 90.5deg) 0 0," +
+                        " conic-gradient(from -45deg at bottom, #0000, #000 .5deg 90deg, #0000 90.5deg) 0 100%;",
+                    "-webkit-mask-size": "25% 50%",
+                    "-webkit-mask-repeat": "repeat-x",
+                    background: "linear-gradient(#25b09b 0 0) left/0% 100% no-repeat #ddd",
+                    animation: "loader-animation 2s infinite linear",
+                },
+                ".loading-container": {
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100vh"
+                },
+                "@keyframes loader-animation": {
+                    "100%": {
+                        backgroundSize: "100% 100%",
+                    },
+                },
             }
             addUtilities(newUtilities, ["responsive", "hover"])
         }

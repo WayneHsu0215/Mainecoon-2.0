@@ -17,6 +17,8 @@ import {Point} from "ol/geom.js";
 import {Vector} from "ol/layer.js";
 import VectorSource from "ol/source/Vector";
 import {toast} from "react-toastify";
+import {ImageList} from "../AllData/ImageList.jsx";
+import {useLocation} from "react-router-dom";
 
 const ViewerPage = () => {
     const searchParams = new URLSearchParams(window.location.search)
@@ -31,7 +33,7 @@ const ViewerPage = () => {
     const [annSeries, setAnnSeries] = useState([])
     const [images, setImages] = useState([])
     const [annotations, setAnnotations] = useState({})
-    const [isLeftOpen, setIsLeftOpen] = useState(true)
+    const [isLeftOpen, setIsLeftOpen] = useState(false)
     const [isReportOpen, setIsReportOpen] = useState(false)
     const [isRightOpen, setIsRightOpen] = useState(true)
     const [labelOpen, setLabelOpen] = useState([1, 1, 1, 0, 1, 1])
@@ -54,15 +56,12 @@ const ViewerPage = () => {
         smSeriesUid: ''
     })
     const [annotationSeriesUid, setAnnotationSeriesUid] = useState('')
-    const [isAllDrawerOpen, setIsAllDrawerOpen] = useState(true)
+    const [isInfoOpen, setIsInfoOpen] = useState(false)
 
     const RightDrawerOpen = () => {
         setIsRightOpen(!isRightOpen)
     }
 
-    const LeftDrawerOpen = () => {
-        setIsLeftOpen(!isLeftOpen)
-    }
 
     const ReportOpen = () => {
         setIsReportOpen(!isReportOpen)
@@ -365,10 +364,18 @@ const ViewerPage = () => {
         toast.error('刪除功能目前遇到伺服器錯誤，目前維修中')
     };
 
+    const handleInfoOpen = () => {
+        setIsInfoOpen(!isInfoOpen)
+    }
+
+    const [isSlidesOpen, setIsSlidesOpen] = useState(true);
+    const handleSlideDrawerOpen = () => {
+        setIsSlidesOpen(!isSlidesOpen)
+    }
 
     return (
         <>
-            <div className="flex h-full w-auto flex-col">
+            <div className="flex h-full w-auto flex-col bg-opacity-25">
                 <ViewerPageHeader drawType={[drawType, setDrawType]}
                                   save={[save, setSave]}
                                   isLeftOpen={[isLeftOpen, setIsLeftOpen]}
@@ -379,63 +386,58 @@ const ViewerPage = () => {
                                   studyUid={studyUid}
                                   seriesUid={seriesUID}
                                   imageLoading={loading}
+                                  handleInfoOpen={handleInfoOpen}
                 />
-                <div className={`custom-height w-full flex grow`}>
-                    {isLeftOpen ? (
-                        <LeftDrawer labelOpen={labelOpen}
-                                    handleLabelOpen={handleLabelOpen}
-                                    smSeries={smSeries}
-                                    seriesUid={[seriesUID, setSeriesUID]}
-                                    detail={patientDetails}
-                                    studyUid={studyUid}
-                                    server={server}
-                                    LeftDrawerOpen={LeftDrawerOpen}
-                                    isLeftOpen={[isLeftOpen, setIsLeftOpen]}
-                        />) : (
+                <div className={`custom-height w-full flex grow relative`}>
+                    {isSlidesOpen ? (
+                        <ImageList isSlidesOpen={isSlidesOpen} handleSlideDrawerOpen={handleSlideDrawerOpen}/>
+                    ) : (
                         !isReportOpen && (
-                            <div className="bg-opacity-0 flex items-center z-30">
-                                <div className="bg-opacity-0 absolute z-30">
+                            <div className="flex z-30">
+                                <div className="absolute z-30">
                                     <button
-                                        className="flex items-center bg-gray-400 align-bottom hover:bg-gray-600 text-white font-bold rounded-r-lg py-8 w-8 mb-2"
-                                        onClick={LeftDrawerOpen}>
-                                        <span className="rotate-90 tracking-wider">Info</span>
+                                        className="flex items-center justify-center bg-green-500 text-white font-semibold rounded-lg py-2 px-3 m-2 border-2 border-green-600 shadow-md transition-all duration-300 hover:bg-green-600
+                                        hover:shadow-lg hover:scale-105 active:bg-green-700 active:scale-95 focus:outline-none focus:ring-2 focus:ring-green-300"
+                                        onClick={handleSlideDrawerOpen}
+                                    >
+                                        <span>Slides</span>
                                     </button>
-                                    {studyUid === '1.2.826.0.1.3680043.8.498.10440910359896722642033112720879029428' && (
-                                        <button
-                                            className="flex items-center bg-gray-400 align-bottom m-0 hover:bg-gray-600 text-white font-bold rounded-r-lg py-8 w-8"
-                                            onClick={ReportOpen}>
-                                            <span className="rotate-90 tracking-wider -ml-2.5">report</span>
-                                        </button>
-                                    )}
+
+                                    <button
+                                        className="flex items-center justify-center bg-green-500 text-white font-semibold rounded-lg py-2 px-3 m-2 border-2 border-green-600 shadow-md transition-all duration-300 hover:bg-green-600
+                                        hover:shadow-lg hover:scale-105 active:bg-green-700 active:scale-95 focus:outline-none focus:ring-2 focus:ring-green-300"
+                                        onClick={ReportOpen}>
+                                        <span>Report</span>
+                                    </button>
                                 </div>
                             </div>)
                     )}
                     {isReportOpen ? (
                         <>
                             <Report ReportOpen={ReportOpen}/>
-                            {!isLeftOpen && (
-                                <div className="bg-opacity-0 flex justify-start items-center z-30 mt-2 ">
-                                    <div className="bg-opacity-0 absolute z-30">
+                            {!isSlidesOpen && (
+                                <div className="flex justify-start  z-30 mt-2 ">
+                                    <div className="absolute z-30">
                                         <button
-                                            className="flex items-center bg-gray-400 align-bottom m-0 hover:bg-gray-600 text-white font-bold rounded-r-lg py-8 w-8"
-                                            onClick={LeftDrawerOpen}>
-                                            <span className="rotate-90 tracking-wider -ml-2.5">Info</span>
+                                            className="flex items-center justify-center bg-green-500 text-white font-semibold rounded-lg py-2 px-3 m-2 border-2 border-green-600 shadow-md transition-all duration-300 hover:bg-green-600
+                                        hover:shadow-lg hover:scale-105 active:bg-green-700 active:scale-95 focus:outline-none focus:ring-2 focus:ring-green-300"
+                                            onClick={handleSlideDrawerOpen}>
+                                            <span>Slides</span>
                                         </button>
                                     </div>
                                 </div>
                             )}
                         </>
                     ) : (
-                        isLeftOpen ? (
-                            <div className="bg-opacity-0 flex justify-start items-center z-30 mt-2 ">
-                                <div className="bg-opacity-0 absolute z-30">
-                                    {studyUid === '1.2.826.0.1.3680043.8.498.10440910359896722642033112720879029428' && (
+                        isSlidesOpen ? (
+                            <div className="flex justify-start z-30 mt-2 ">
+                                <div className="absolute z-30">
                                     <button
-                                        className="flex items-center bg-gray-400 align-bottom m-0 hover:bg-gray-600 text-white font-bold rounded-r-lg py-8 w-8"
+                                        className="flex items-center justify-center bg-green-500 text-white font-semibold rounded-lg py-2 px-3 m-2 border-2 border-green-600 shadow-md transition-all duration-300 hover:bg-green-600
+                                        hover:shadow-lg hover:scale-105 active:bg-green-700 active:scale-95 focus:outline-none focus:ring-2 focus:ring-green-300"
                                         onClick={ReportOpen}>
-                                        <span className="rotate-90 tracking-wider -ml-2.5">report</span>
+                                        <span>report</span>
                                     </button>
-                                        )}
                                 </div>
                             </div>) : (<></>)
                     )}
@@ -453,21 +455,25 @@ const ViewerPage = () => {
                         onMessageChange={handlePanToMessage}
                     />
                     {isRightOpen ? (
-                        <RightDrawer labelOpen={labelOpen}
-                                     handleLabelOpen={handleLabelOpen}
-                                     handleDeleteAnn={handleDeleteAnn}
-                                     RightDrawerOpen={RightDrawerOpen}
-                                     onMessageChange={handleMessageChange}
-                                     Layers={[layers, setLayers]}
-                                     Loading={loading}
-                                     SMseriesUid={seriesUID}
-                                     urlInfo={urlInfo}
-                                     drawType={drawType}
-                                     CurrentDraw={[currentDraw, setCurrentDraw]}
+                        <RightDrawer
+                            labelOpen={labelOpen}
+                            handleLabelOpen={handleLabelOpen}
+                            handleDeleteAnn={handleDeleteAnn}
+                            RightDrawerOpen={RightDrawerOpen}
+                            onMessageChange={handleMessageChange}
+                            Layers={[layers, setLayers]}
+                            detail={patientDetails}
+                            Loading={loading}
+                            SMseriesUid={seriesUID}
+                            urlInfo={urlInfo}
+                            drawType={drawType}
+                            CurrentDraw={[currentDraw, setCurrentDraw]}
+                            isInfoOpen={isInfoOpen}
+                            handleInfoOpen={handleInfoOpen}
                         />
                     ) : (
-                        <div className="bg-opacity-0 flex justify-end items-center z-30 mt-2">
-                            <div className="bg-opacity-0 absolute z-30 mt-2">
+                        <div className="flex justify-end items-center z-30 mt-2">
+                            <div className="absolute z-30 mt-2">
                                 <button
                                     className="flex items-center bg-gray-400 hover:bg-gray-600 text-white font-bold rounded-l-lg px-2 py-5"
                                     onClick={RightDrawerOpen}>

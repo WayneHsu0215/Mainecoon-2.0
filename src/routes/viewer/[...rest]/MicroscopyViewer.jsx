@@ -61,18 +61,19 @@ const MicroscopyViewer = ({baseUrl, studyUid, seriesUid, images, Loading, layers
                     }),
                     new OverviewMap({
                         collapsed: false,
+                        // className: 'custom-overview-map',
                         layers: [new TileLayer({source: layer.getSource()})],
                     }),
                     ...(PixelSpacings ? [new ScaleLine({units: 'metric', className: 'ol-scale-line'})] : []),
                     new ScaleLine(),
                     new FullScreen(),
-                    new Rotate(),
+                    // new Rotate(),
                     new ZoomSlider(),
                     // new ZoomToExtent(),
                     new Zoom({
                         className: 'zoom-control' // 添加自定义的类名
                     }),
-                    new Attribution(),
+                    // new Attribution(),
                 ];
 
                 const select = new Select();
@@ -166,7 +167,7 @@ const MicroscopyViewer = ({baseUrl, studyUid, seriesUid, images, Loading, layers
     useEffect(() => {updateAnnotation(mapRef, NewSeriesInfo, layers, setAnnotationList,DrawColor)}, [status])
 
     return (
-        <div id="ViewerID" className={`relative w-full flex grow bg-gray-100`}>
+        <div id="ViewerID" className={`relative w-full flex grow bg-gray-100 `}>
             {loading ? (
                 <div className="w-full h-full flex items-center justify-center">
                     <div className="w-10 h-10 border-4 border-t-primary border-b-green-400 rounded-full animate-spin"/>
@@ -181,6 +182,7 @@ const MicroscopyViewer = ({baseUrl, studyUid, seriesUid, images, Loading, layers
                 </>
             )}
         </div>
+
     );
 };
 
