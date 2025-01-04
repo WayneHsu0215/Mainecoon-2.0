@@ -143,7 +143,7 @@ const Annotations = ({Layers, Loading, onMessageChange, CurrentDraw,handleDelete
                                     </div>
                                 )}
                                 <div className="flex items-center w-full justify-between ml-2 p-2 ">
-                                    <div className="p-1.5">Accession # : {accessionNumber}</div>
+                                    <div className="p-1.5">{accessionNumber}</div>
                                     <div className="flex items-center">
                                         {editable && (
                                             <button

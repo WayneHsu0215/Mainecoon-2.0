@@ -1,25 +1,18 @@
 import LoadingSpin from "./LoadingSpin.jsx";
 
 const PatientDetails = ({label, detail, style}) => {
-    const patient = {
-        ID: detail.patientID,
+    const Info = {
+        Patient_ID: detail.patientID,
         Name: detail.patientName,
         Gender: detail.patientSex,
-        Birthdate: detail.patientBirthDate
-    }
-
-    const study = {
-        AccessionNum: detail.accessionNumber,
-        ID: detail.accessionNumber,
-        Date: detail.studyDate,
-        Time: detail.studyTime
+        Birthdate: detail.patientBirthDate,
+        AccessionNumber: detail.accessionNumber,
+        Study_ID: detail.accessionNumber,
+        Study_Date: detail.studyDate + ' _ ' + detail.studyTime,
     }
 
     const DetailLine = ({label, value}) => (
-        <span className="block ml-2 text-sm mb-1 font-medium">
-        <span>{label} : </span>
-            <span className="font-bold ">{value}</span>
-        </span>
+        <span className="block ml-2 text-md mb-1 font-medium">{label} : {value}</span>
     );
 
     const isObjectComplete = (obj) => {
@@ -30,22 +23,13 @@ const PatientDetails = ({label, detail, style}) => {
         <div
             className={`${style === "ViewerHeader" ? 'absolute w-72 border-2 text-start bg-white p-4 border-gray-600 shadow-md rounded-lg top-4 left-0 z-50'
                 : 'bg-white text-start text-black py-2 '}`}>
-            {label === 'Patient' && (
-                !isObjectComplete(patient) ? <LoadingSpin/> :
-                    <div className="m-1">
-                        {Object.entries(patient).map(([key, value]) => (
+            {!isObjectComplete(Info) ? <LoadingSpin/> :
+                <div className="m-1">
+                    {Object.entries(Info).map(([key, value]) => (
                         <DetailLine key={key} label={key} value={value}/>
                     ))}
-                    </div>
-            )}
-            {label === 'Study' && (
-                !isObjectComplete(study) ? <LoadingSpin/> :
-                    <div className="m-1">
-                        {Object.entries(study).map(([key, value]) => (
-                            <DetailLine key={key} label={key} value={value}/>
-                        ))}
-                    </div>
-            )}
+                </div>
+            }
         </div>
     );
 }

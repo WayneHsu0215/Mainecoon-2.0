@@ -5,7 +5,7 @@ import Server from "./Server.jsx";
 import {ServerContext} from "../../lib/ServerContext.jsx";
 import SearchForm from "./SearchForm.jsx";
 import {CombineSearchURL} from "../../lib/search/index.js";
-import {Icon} from "@iconify/react";
+
 import {ImageContext} from "../../lib/ImageContext.jsx";
 
 const SearchPageHeader = ({setSearchResults, pageLimit, pageOffset, setHandleNextPageChange,setIsLoading}) => {
@@ -52,7 +52,6 @@ const SearchPageHeader = ({setSearchResults, pageLimit, pageOffset, setHandleNex
                 } else {
                     setHandleNextPageChange(true);
                 }
-                console.log('data:', data);
                 setImage(data)
                 setSearchResults(data);
                 setIsLoading(false);
@@ -94,7 +93,7 @@ const SearchPageHeader = ({setSearchResults, pageLimit, pageOffset, setHandleNex
                                         <SearchForm name="PatientID" setSearchResults={setSearchResults}
                                                     pageLimit={pageLimit} Parameter={[parameter, setParameter]}
                                                     pageOffset={pageOffset} setIsMouseOn={setIsMouseOn}
-                                                    setIsLoading={setIsLoading}
+                                                    setIsLoading={setIsLoading} location="SearchPageHeader"
                                         />
                                     </div>
                                 </div>
@@ -105,19 +104,19 @@ const SearchPageHeader = ({setSearchResults, pageLimit, pageOffset, setHandleNex
                                             <SearchForm name="PatientName" setSearchResults={setSearchResults}
                                                         pageLimit={pageLimit} Parameter={[parameter, setParameter]}
                                                         pageOffset={pageOffset} setIsMouseOn={setIsMouseOn}
-                                                        setIsLoading={setIsLoading}/>
+                                                        setIsLoading={setIsLoading} location="SearchPageHeader"/>
                                             <SearchForm name="StudyInstanceUID" setSearchResults={setSearchResults}
                                                         pageLimit={pageLimit} Parameter={[parameter, setParameter]}
                                                         pageOffset={pageOffset} setIsMouseOn={setIsMouseOn}
-                                                        setIsLoading={setIsLoading}/>
+                                                        setIsLoading={setIsLoading} location="SearchPageHeader"/>
                                             <SearchForm name="AccessionNumber" setSearchResults={setSearchResults}
                                                         pageLimit={pageLimit} Parameter={[parameter, setParameter]}
                                                         pageOffset={pageOffset} setIsMouseOn={setIsMouseOn}
-                                                        setIsLoading={setIsLoading}/>
+                                                        setIsLoading={setIsLoading} location="SearchPageHeader"/>
                                             <SearchForm name="StudyDate" setSearchResults={setSearchResults}
                                                         pageLimit={pageLimit} Parameter={[parameter, setParameter]}
                                                         pageOffset={pageOffset} setIsMouseOn={setIsMouseOn}
-                                                        setIsLoading={setIsLoading}/>
+                                                        setIsLoading={setIsLoading} location="SearchPageHeader"/>
                                         </div>
                                         <div className="flex justify-end mb-1.5 mr-2 font-bold">
                                             <button onClick={mouseOutFun}>Close</button>

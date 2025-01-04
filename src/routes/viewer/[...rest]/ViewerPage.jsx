@@ -36,7 +36,7 @@ const ViewerPage = () => {
     const [isLeftOpen, setIsLeftOpen] = useState(false)
     const [isReportOpen, setIsReportOpen] = useState(false)
     const [isRightOpen, setIsRightOpen] = useState(true)
-    const [labelOpen, setLabelOpen] = useState([1, 1, 1, 0, 1, 1])
+    const [labelOpen, setLabelOpen] = useState([1, 1, 1, 1, 1, 1])
     const [drawType, setDrawType] = useState(null)
     const [save, setSave] = useState(false)
     const [layers, setLayers] = useState({})
@@ -44,7 +44,7 @@ const ViewerPage = () => {
     const patientDetails = fetchPatientDetails(data[0])
     const [annotationList, setAnnotationList] = useContext(AnnotationsContext)
     const [drawColor, setDrawColor] = useState('rgba(255, 0, 0, 1)')
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [currentDraw, setCurrentDraw] = useState({seriesUid: "", index: ""})
     const [newSeriesInfo, setNewSeriesInfo] = useState({
         action: '',
@@ -56,7 +56,7 @@ const ViewerPage = () => {
         smSeriesUid: ''
     })
     const [annotationSeriesUid, setAnnotationSeriesUid] = useState('')
-    const [isInfoOpen, setIsInfoOpen] = useState(false)
+    const [isInfoOpen, setIsInfoOpen] = useState(true)
 
     const RightDrawerOpen = () => {
         setIsRightOpen(!isRightOpen)

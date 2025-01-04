@@ -1,11 +1,11 @@
-import { Icon } from "@iconify/react";
+import {Icon} from "@iconify/react";
 import SpecimenList from "./Specimen.jsx";
-import React, { useState } from "react";
+import React, {useState} from "react";
 import DescriptionPlate from "./DescriptionPlate.jsx";
 import Annotaions from "./Annotaions.jsx";
 import GeometryPicker from "./GeometryPicker.jsx";
 import mdiAddSeries from '@iconify-icons/mdi/add';
-import { generateSeriesUID } from "../../../lib/search/index.js";
+import {generateSeriesUID} from "../../../lib/search/index.js";
 import PatientDetails from "./PatientDetails.jsx";
 
 const RightDrawer = ({
@@ -30,10 +30,10 @@ const RightDrawer = ({
     const AddNewSeries = (value) => {
         const seriesUid = generateSeriesUID();
         setDrawTypes(value);
-        onMessageChange({ name: 'addSeries', type: value, seriesUid: seriesUid, smSeriesUid: SMseriesUid });
+        onMessageChange({name: 'addSeries', type: value, seriesUid: seriesUid, smSeriesUid: SMseriesUid});
         setIsOpen(false);
-        setCurrentDraw({ seriesUid: seriesUid, index: 0 });
-        onMessageChange({ seriesUid: seriesUid });
+        setCurrentDraw({seriesUid: seriesUid, index: 0});
+        onMessageChange({seriesUid: seriesUid});
     };
 
     const openGeometryPicker = (event) => {
@@ -61,7 +61,7 @@ const RightDrawer = ({
                             className={`w-12 h-6 flex items-center rounded-full p-1 transition-all duration-300 ${labelOpen[3] !== 0 ? 'bg-blue-500' : 'bg-gray-300'}`}
                         >
                             <div
-                                className={`w-4 h-4 bg-white rounded-full transform transition-all duration-300 ${labelOpen[3] !== 0 ? 'translate-x-6' : ''}`} />
+                                className={`w-4 h-4 bg-white rounded-full transform transition-all duration-300 ${labelOpen[3] !== 0 ? 'translate-x-6' : ''}`}/>
                         </button>
                         <label htmlFor="Slide label" className="font-sans font-medium text-gray-700 ">
                             Slide label
@@ -73,14 +73,51 @@ const RightDrawer = ({
                             className={`w-12 h-6 flex items-center rounded-full p-1 transition-all duration-300 ${labelOpen[4] !== 0 ? 'bg-blue-500' : 'bg-gray-300'}`}
                         >
                             <div
-                                className={`w-4 h-4 bg-white rounded-full transform transition-all duration-300 ${labelOpen[4] !== 0 ? 'translate-x-6' : ''}`} />
+                                className={`w-4 h-4 bg-white rounded-full transform transition-all duration-300 ${labelOpen[4] !== 0 ? 'translate-x-6' : ''}`}/>
                         </button>
                         <label htmlFor="Specimens" className="font-sans font-medium text-gray-700 ">
                             Specimens
                         </label>
                     </div>
                 </div>
-
+                {isInfoOpen && (
+                    <div
+                        className={`h-auto rounded-xl ${labelOpen[0] !== 0 ? ("border-2 m-2 border-gray-200 ") : ("hidden")}`}>
+                        <div className="flex justify-between mr-3">
+                            <label className="text-xl font-sans font-bold text-green-400 ml-1 p-2">
+                                Info
+                            </label>
+                            <button
+                                onClick={handleInfoOpen}
+                                className="flex items-center p-1 transition-all justify-center duration-300 hover:bg-red-400 mt-1 mb-1 rounded-lg w-8"
+                            >
+                                X
+                            </button>
+                        </div>
+                        <div className={`h-auto ${labelOpen[0] !== 0 ? ("border-t mx-2 border-gray-200 ") : ("hidden")}`}>
+                            <PatientDetails labelOpen={labelOpen} detail={detail} label="Patient" style="Patient"/>
+                        </div>
+                    </div>
+                )}
+                <div className={`h-auto rounded-xl ${labelOpen[4] !== 0 ? ("border-2 m-2 border-gray-200 ") : ("hidden")}`}>
+                    <DescriptionPlate label="Specimens"
+                                      icon="pajamas:details-block"
+                                      isOpen={labelOpen[4] !== 0}
+                                      onClick={(e) => handleLabelOpen(e, 4)}
+                    >
+                        <SpecimenList urlInfo={urlInfo}/>
+                    </DescriptionPlate>
+                </div>
+                <div
+                    className={`h-auto rounded-xl ${labelOpen[3] !== 0 ? ("border-2 m-2 border-gray-200 ") : ("hidden")}`}>
+                    <DescriptionPlate label="Slide label"
+                                      icon="pajamas:details-block"
+                                      isOpen={labelOpen[3] !== 0}
+                                      onClick={(e) => handleLabelOpen(e, 3)}
+                    >
+                        <SpecimenList urlInfo={urlInfo}/>
+                    </DescriptionPlate>
+                </div>
                 <div className={`h-auto rounded-xl ${labelOpen[5] !== 0 && "border-2 m-2 border-gray-200 "}`}
                 >
                     <DescriptionPlate
@@ -94,7 +131,7 @@ const RightDrawer = ({
                                     className="border-1 hover:bg-green-200 rounded-lg m-2 p-1 font-sans font-bold text-sm"
                                     onClick={openGeometryPicker}
                                 >
-                                    <Icon icon={mdiAddSeries} width="20" height="20" />
+                                    <Icon icon={mdiAddSeries} width="20" height="20"/>
                                 </button>
                                 <div className="relative">
                                     <div
@@ -123,62 +160,6 @@ const RightDrawer = ({
                         </div>
                     </DescriptionPlate>
                 </div>
-                <div
-                    className={`h-auto rounded-xl ${labelOpen[4] !== 0 ? ("border-2 m-2 border-gray-200 ") : ("hidden")}`}>
-                    <DescriptionPlate label="Specimens"
-                                      icon="pajamas:details-block"
-                                      isOpen={labelOpen[4] !== 0}
-                                      onClick={(e) => handleLabelOpen(e, 4)}
-                    >
-                        <SpecimenList urlInfo={urlInfo} />
-                    </DescriptionPlate>
-                </div>
-                <div
-                    className={`h-auto rounded-xl ${labelOpen[3] !== 0 ? ("border-2 m-2 border-gray-200 ") : ("hidden")}`}>
-                    <DescriptionPlate label="Slide label"
-                                      icon="pajamas:details-block"
-                                      isOpen={labelOpen[3] !== 0}
-                                      onClick={(e) => handleLabelOpen(e, 3)}
-                    >
-                        <SpecimenList urlInfo={urlInfo} />
-                    </DescriptionPlate>
-                </div>
-                {isInfoOpen && (
-                    <div
-                        className={`h-auto rounded-xl ${labelOpen[0] !== 0 ? ("border-2 m-2 border-gray-200 ") : ("hidden")}`}>
-                        <div className="flex justify-between mr-3">
-                            <label className="text-xl font-sans font-bold text-green-400 ml-1 p-2">
-                                Patient Info
-                            </label>
-                            <button
-                                onClick={handleInfoOpen}
-                                className="flex items-center p-1 transition-all justify-center duration-300 hover:bg-red-400 mt-1 rounded-lg w-6"
-                            >
-                                X
-                            </button>
-                        </div>
-                        <div
-                            className={`h-auto rounded-xl  ${labelOpen[0] !== 0 ? ("border-2 m-1 mx-2 border-gray-200 ") : ("hidden")}`}>
-                            <DescriptionPlate
-                                label="Patient"
-                                icon="fluent:document-data-16-filled"
-                                isOpen={labelOpen[0] !== 0}
-                            >
-                                <PatientDetails labelOpen={labelOpen} detail={detail} label="Patient" style="Patient" />
-                            </DescriptionPlate>
-                        </div>
-                        <div
-                            className={`h-auto rounded-xl ${labelOpen[1] !== 0 ? ("border-2 m-2 border-gray-200 ") : ("hidden")}`}>
-                            <DescriptionPlate
-                                label="Study"
-                                icon="fluent:document-data-16-filled"
-                                isOpen={labelOpen[1] !== 0}
-                            >
-                                <PatientDetails labelOpen={labelOpen} detail={detail} label="Study" style="Patient" />
-                            </DescriptionPlate>
-                        </div>
-                    </div>
-                )}
             </div>
         </div>
     );

@@ -24,13 +24,12 @@ import CircleStyle from "ol/style/Circle.js";
 import VectorImageLayer from "ol/layer/VectorImage.js";
 import {DragRotateAndZoom, defaults as defaultInteractions, Select, Translate, Snap} from 'ol/interaction.js';
 
-const MicroscopyViewer = ({baseUrl, studyUid, seriesUid, images, Loading, layers,annotations, NewSeriesInfo,DrawColor,onMessageChange}) => {
+const MicroscopyViewer = ({baseUrl, studyUid, seriesUid, images, layers,annotations, NewSeriesInfo,DrawColor,onMessageChange}) => {
     const [newSeriesInfo, setNewSeriesInfo] = NewSeriesInfo
     const {status} = newSeriesInfo;
     const [errorMessage, setErrorMessage] = useState(undefined);
     const [layer, setLayer] = layers;
     const mapRef = useRef(null);
-    const [loading, setLoading] = Loading;
     const [annotationList, setAnnotationList] = useContext(AnnotationsContext)
 
     const findMaxToalPixelMatrixColumns = (images) => {
@@ -91,8 +90,8 @@ const MicroscopyViewer = ({baseUrl, studyUid, seriesUid, images, Loading, layers
                     view,
                 });
 
-                mapRef.current.on('loadstart', () => setLoading(true));
-                mapRef.current.on('loadend', () => setLoading(false));
+                // mapRef.current.on('loadstart', () => setLoading(true));
+                // mapRef.current.on('loadend', () => setLoading(false));
                 mapRef.current.getView().fit(extent, {size: mapRef.current.getSize()});
                 let tempLayer = {}
 
@@ -168,11 +167,11 @@ const MicroscopyViewer = ({baseUrl, studyUid, seriesUid, images, Loading, layers
 
     return (
         <div id="ViewerID" className={`relative w-full flex grow bg-gray-100 `}>
-            {loading ? (
-                <div className="w-full h-full flex items-center justify-center">
-                    <div className="w-10 h-10 border-4 border-t-primary border-b-green-400 rounded-full animate-spin"/>
-                </div>
-            ) : (
+            {/*{loading ? (*/}
+            {/*    <div className="w-full h-full flex items-center justify-center">*/}
+            {/*        <div className="w-10 h-10 border-4 border-t-primary border-b-green-400 rounded-full animate-spin"/>*/}
+            {/*    </div>*/}
+            {/*) : (*/}
                 <>
                     <div className="max-h-full h-100 w-full"/>
                     <div
@@ -180,7 +179,7 @@ const MicroscopyViewer = ({baseUrl, studyUid, seriesUid, images, Loading, layers
                         <p>{errorMessage}</p>
                     </div>
                 </>
-            )}
+            {/*)}*/}
         </div>
 
     );

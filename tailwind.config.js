@@ -5,10 +5,36 @@ export default {
         "./src/**/*.{js,ts,jsx,tsx}",
     ],
     theme: {
-        extend: {},
+        extend: {
+            keyframes: {
+                "loader-animation": {
+                    "100%": {
+                        backgroundSize: "100% 100%",
+                    },
+                },
+                "slideDown": {
+                    "0%": { transform: "translateY(-10%)", opacity: "0" },
+                    "100%": { transform: "translateY(0)", opacity: "1" },
+                },
+                "slideUp": {
+                    '0%': { transform: 'translateY(0)', opacity: '1' },
+                    '100%': { transform: 'translateY(-10%)', opacity: '0' },
+                },
+                "slideRight": {
+                    '0%': { transform: 'translateX(-10)', opacity: '0' },
+                    '100%': { transform: 'translateX(0%)', opacity: '1' },
+                },
+            },
+            animation: {
+                "loader-animation": "loader-animation 2s infinite linear",
+                "slideDown": "slideDown 0.5s ease-out",
+                "slideUp": 'slideUp 0.9s ease-out',
+                "slideRight": 'slideRight 1s ease-out',
+            },
+        },
     },
     plugins: [
-        function ({addUtilities}) {
+        function ({ addUtilities }) {
             const newUtilities = {
                 ".scrollbar-thin": {
                     scrollbarWidth: "thin",
@@ -27,19 +53,19 @@ export default {
                 },
                 ".scrollbar-webkit": {
                     "&::-webkit-scrollbar": {
-                        width: "4px"
+                        width: "4px",
                     },
                     "&::-webkit-scrollbar-track": {
-                        background: "white"
+                        background: "white",
                     },
                     "&::-webkit-scrollbar-thumb": {
                         background: "rgba(31 41 55)",
                         borderRadius: "50px",
-                        border: "0.5px solid white"
-                    }
+                        border: "0.5px solid white",
+                    },
                 },
                 ".custom-height": {
-                    height: "calc(90vh - 5rem)"
+                    height: "calc(90vh - 5rem)",
                 },
                 ".loading": {
                     width: "124px",
@@ -50,22 +76,16 @@ export default {
                     "-webkit-mask-size": "25% 50%",
                     "-webkit-mask-repeat": "repeat-x",
                     background: "linear-gradient(#25b09b 0 0) left/0% 100% no-repeat #ddd",
-                    animation: "loader-animation 2s infinite linear",
+                    animation: "loader-animation",
                 },
                 ".loading-container": {
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                    height: "100vh"
+                    height: "100vh",
                 },
-                "@keyframes loader-animation": {
-                    "100%": {
-                        backgroundSize: "100% 100%",
-                    },
-                },
-            }
-            addUtilities(newUtilities, ["responsive", "hover"])
-        }
+            };
+            addUtilities(newUtilities, ["responsive", "hover"]);
+        },
     ],
-}
-
+};

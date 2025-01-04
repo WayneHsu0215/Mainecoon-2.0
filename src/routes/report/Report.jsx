@@ -34,9 +34,11 @@ const Report = ({ ReportOpen, title, seriesInstanceUID, diagnosticReportUrl }) =
     };
 
     return (
-        <div className="w-1/2 border-r border-gray-400 ">
-            <div className="bg-green-300 p-2  flex justify-between items-center">
-                <p className="font-bold text-md">Report</p>
+        <div className="border-r border-gray-400">
+            <div className="flex items-center justify-between gap-3 p-2 mt-1 mx-2 border-b-2">
+                <label htmlFor="Report" className="text-xl font-sans font-bold text-green-400">
+                    Report
+                </label>
                 <div className="flex gap-2">
                     <button
                         className=" text-gray-700 underline font-semibold rounded-md px-2 py-1 text-xs"
@@ -61,7 +63,7 @@ const Report = ({ ReportOpen, title, seriesInstanceUID, diagnosticReportUrl }) =
                 </div>
 
             </div>
-            <div className="h-full w-full  rounded-b-2xl flex flex-col">
+            <div className="h-full break-all rounded-b-2xl flex flex-col">
                 <div className="p-2 m-2 overflow-y-auto scrollbar-thin-report">
                     {!changeToJson ? (
                         <p className="mx-3 text-sm mt-2">

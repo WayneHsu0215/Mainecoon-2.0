@@ -231,54 +231,23 @@ const ViewerPageHeader = ({
                             <h1 className="text-2xl ml-2 mr-5 font-bold font-serif tracking-wider">MAINECOON</h1>
                         </div>
                     </div>
-
-                    <div
-                        className="text-black w-full flex justify-start items-center text-center font-bold gap-1 text-sm">
-                        {/*<div>*/}
-                        {/*    <button*/}
-                        {/*        className="flex bg-white hover:bg-yellow-500 rounded-lg p-1.5 mr-1 mb-1 block"*/}
-                        {/*        ref={myPatientDetailsRef} onMouseOver={mouseOnPatientFun}*/}
-                        {/*        onMouseLeave={mouseOutPatientFun}>*/}
-                        {/*        <Icon icon="bi:people-circle" width="18" height="18"/>*/}
-                        {/*        <span className="sm:inline hidden ml-1">Patient</span>*/}
-                        {/*    </button>*/}
-                        {/*    <div className={`relative bg-white z-10 ${isMouseOnPatient ? '' : 'hidden'}`}>*/}
-                        {/*        <PatientDetails detail={detail} label={"Patient"} style={"ViewerHeader"}/>*/}
-                        {/*    </div>*/}
-                        {/*</div>*/}
-                        {/*<div>*/}
-                        {/*    <button*/}
-                        {/*        className="flex bg-white hover:bg-yellow-500 rounded-lg p-1.5 mr-1 mb-1 block"*/}
-                        {/*        ref={myCaseDetailsRef} onMouseOver={mouseOnCaseFun}*/}
-                        {/*        onMouseLeave={mouseOutCaseFun}*/}
-                        {/*    ><Icon icon="fluent:document-data-16-filled" width="20" height="20"/>*/}
-                        {/*        <span className="sm:inline hidden ml-1">Study</span>*/}
-                        {/*    </button>*/}
-                        {/*    <div className={`relative bg-white z-10 ${isMouseOnCase ? '' : 'hidden'}`}>*/}
-                        {/*        <PatientDetails detail={detail} label={"Study"} style={"ViewerHeader"}/>*/}
-                        {/*    </div>*/}
-                        {/*</div>*/}
-                        <div>
-                            <button
-                                className="flex bg-white hover:bg-yellow-500 rounded-lg p-2 mr-1 mb-1 " onClick={handleInfoOpen}>
+                    <div className="flex justify-end items-center w-full">
+                        <div className="mr-2">
+                            <button className="flex bg-white hover:bg-yellow-500 rounded-lg p-1.5 mr-1 mb-1 text-black items-center"
+                                onClick={handleInfoOpen}>
                                 <Icon icon="fluent:document-data-16-filled" width="20" height="20"/>
-                                <span className="sm:inline hidden ml-1">INFO</span>
+                                <span className="sm:inline hidden ml-1 items-center">INFO</span>
                             </button>
                         </div>
-                    </div>
-
-                    <div className="flex justify-end items-center w-full">
-                        <div ref={myRef} onClick={mouseOnFun}
-                             className={`mr-2 ${imageLoading ? 'pointer-events-none opacity-50' : ''}`}>
+                        <div ref={myRef} onClick={mouseOnFun} className={`mr-2 ${imageLoading ? 'pointer-events-none opacity-50' : ''}`}>
                             <button className="bg-white hover:bg-yellow-500 rounded-lg p-1.5 mr-1 mb-1 block">
                                 <Icon icon="mdi:tag-edit" className="text-black h-5 w-5"/>
                             </button>
                         </div>
-
                         <div className="flex flex-row gap-2">
                             <button className="bg-white hover:bg-yellow-500 rounded-lg p-1.5 mr-1 mb-1 block"
                                     onClick={() => handleDraw('cancel', '')}>
-                            <Icon icon="fa6-regular:hand" className="text-black h-5 w-5"/>
+                                <Icon icon="fa6-regular:hand" className="text-black h-5 w-5"/>
                             </button>
                             {/*<button className="relative bg-white hover:bg-yellow-500 rounded-lg p-1.5 mr-1 mb-1 block">*/}
                             {/*    <label className="contents ">*/}
@@ -315,7 +284,6 @@ const ViewerPageHeader = ({
                                     onPick={(type) => handleDraw('drawtype', type)}/>
                 </div>
             </Modal>
-
         </>)
 };
 
