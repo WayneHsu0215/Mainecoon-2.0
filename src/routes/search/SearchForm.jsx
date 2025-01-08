@@ -17,8 +17,8 @@ const SearchForm = ({
     const [server, setServer] = useContext(ServerContext)
 
 
-    const handleQueryParameterChange = (e) => {
-        const {name, value} = e.target;
+    const handleQueryParameterChange = (e,name) => {
+        const value = e.target.value
         setParameter({...parameter, [name]: value})
     }
 
@@ -51,14 +51,36 @@ const SearchForm = ({
                 <div className="flex w-full">
                     <div
                         className={`flex items-center me-2  ${location === "SearchPageHeader" ? " font-bold" : "text-green-500 font-medium"}`}>{name}</div>
-                    <input
-                        type={name === "StudyDate" ? "date" : "text"}
-                        className={`border-2  p-2 rounded-lg text-black w-full ${location === "SearchPageHeader" ? "m-2" : "m-1"}`}
-                        name={name} value={parameter[name]}
-                        onChange={(e) => {
-                            handleQueryParameterChange(e)
-                        }}
-                    />
+                    {name === "StudyDate" ? (
+                        <>
+                            <input
+                                type="date"
+                                className={`border-2  p-2 rounded-lg text-black w-full ${location === "SearchPageHeader" ? "m-2" : "m-1"}`}
+                                name={name} value={parameter[name]}
+                                onChange={(e) => {
+                                    handleQueryParameterChange(e, 'StudyDateStart')
+                                }}
+                            />
+                            <span className="mx-2">~</span>
+                            <input
+                                type="date"
+                                className={`border-2  p-2 rounded-lg text-black w-full ${location === "SearchPageHeader" ? "m-2" : "m-1"}`}
+                                name={name} value={parameter[name]}
+                                onChange={(e) => {
+                                    handleQueryParameterChange(e, 'StudyDateEnd')
+                                }}
+                            />
+                        </>
+                    ) : (
+                        <input
+                            type="text"
+                            className={`border-2  p-2 rounded-lg text-black w-full ${location === "SearchPageHeader" ? "m-2" : "m-1"}`}
+                            name={name} value={parameter[name]}
+                            onChange={(e) => {
+                                handleQueryParameterChange(e,name)
+                            }}
+                        />
+                    )}
                 </div>
                 {location === "SearchPageHeader" && (
                     name === "PatientID" && (
@@ -74,4 +96,4 @@ const SearchForm = ({
     )
 }
 
-    export default SearchForm
+export default SearchForm

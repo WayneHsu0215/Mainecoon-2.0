@@ -375,7 +375,7 @@ const ViewerPage = () => {
 
     return (
         <>
-            <div className="flex h-full w-auto flex-col bg-opacity-25">
+            <div className="flex h-full w-auto flex-col bg-white bg-opacity-25">
                 <ViewerPageHeader drawType={[drawType, setDrawType]}
                                   save={[save, setSave]}
                                   isLeftOpen={[isLeftOpen, setIsLeftOpen]}

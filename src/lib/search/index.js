@@ -10,28 +10,61 @@ function combineUrl(server){
     return `${protocol}${hostname}${port}${pathname}`;
 }
 
-function CombineSearchURL(parameter,server, pageLimit, pageOffset) {
+function CombineSearchURL(parameter, server, pageLimit, pageOffset) {
     const url = combineUrl(server);
-    let searchParams = new URLSearchParams();
+    const searchParams = new URLSearchParams();
 
+    // 參數添加小工具：若 value 合理才加入
     const addParam = (key, value) => {
-        if (value !== undefined && value !== '') {searchParams.append(key, value);}
-    }
+        if (value !== undefined && value !== '') {
+            searchParams.append(key, value);
+        }
+    };
+
+    // 將日期物件或字串(可被 new Date() 正確解析) 轉成 YYYYMMDD 格式
+    const formatDate = (dateInput) => {
+        if (!dateInput) return '';
+        const date = new Date(dateInput);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}${month}${day}`;
+    };
+
+    const studyDateStart = formatDate(parameter.StudyDateStart);
+    const studyDateEnd = formatDate(parameter.StudyDateEnd);
+
+    // 加入常見的搜尋條件參數
     addParam('PatientID', parameter.PatientID);
     addParam('PatientName', parameter.PatientName);
     addParam('StudyInstanceUID', parameter.StudyInstanceUID);
     addParam('AccessionNumber', parameter.AccessionNumber);
-    addParam('StudyDate', parameter.StudyDate);
+
+    // 處理 StudyDate 條件
+    let studyDate = '';
+    if (studyDateStart && !studyDateEnd) {
+        studyDate = studyDateStart;
+    } else if (studyDateEnd && !studyDateStart) {
+        studyDate = studyDateEnd;
+    } else if (studyDateStart && studyDateEnd) {
+        studyDate = `${studyDateStart}-${studyDateEnd}`;
+    }
+    addParam('StudyDate', studyDate);
+
+    // 其他搜尋條件
     addParam('StudyTime', parameter.StudyTime);
     addParam('ModalitiesInStudy', parameter.ModalitiesInStudy);
     addParam('ReferringPhysicianName', parameter.ReferringPhysicianName);
     addParam('StudyID', parameter.StudyID);
 
-    searchParams.append('limit', pageLimit);
-    searchParams.append('offset', pageOffset);
-    const searchUrl = `${url}/studies?${searchParams.toString()}`;
-    return searchUrl;
+    // 分頁參數
+    addParam('limit', pageLimit);
+    addParam('offset', pageOffset);
+
+    // 最後組合出查詢 URL
+    return `${url}/studies?${searchParams.toString()}`;
 }
+
 
 function formatDate(date) {
     const year = date.slice(0, 4);

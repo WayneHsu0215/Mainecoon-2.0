@@ -34,7 +34,7 @@ const Report = ({ ReportOpen, title, seriesInstanceUID, diagnosticReportUrl }) =
     };
 
     return (
-        <div className="border-r border-gray-400">
+        <div className="border-r w-1/3 border-gray-400">
             <div className="flex items-center justify-between gap-3 p-2 mt-1 mx-2 border-b-2">
                 <label htmlFor="Report" className="text-xl font-sans font-bold text-green-400">
                     Report
@@ -54,17 +54,18 @@ const Report = ({ ReportOpen, title, seriesInstanceUID, diagnosticReportUrl }) =
                             <Icon icon="material-symbols:download-sharp" className="mr-1"/> Download JSON
                         </button>
                     )}
-                    <button
-                        className="bg-gray-400 hover:bg-gray-600 text-white font-semibold rounded-md px-2 py-1 text-xs"
-                        onClick={ReportOpen}
-                    >
-                        {'<<'}
-                    </button>
+                    <div className="flex items-center justify-end">
+                        <button
+                            className="flex items-center bg-gray-400 hover:bg-gray-600 text-white font-bold rounded-l-lg px-3 py-3"
+                            onClick={ReportOpen}
+                        >{'<<'}
+                        </button>
+                    </div>
                 </div>
 
             </div>
-            <div className="h-full break-all rounded-b-2xl flex flex-col">
-                <div className="p-2 m-2 overflow-y-auto scrollbar-thin-report">
+            <div className="h-5/6 max-h-[950px] break-all rounded-b-2xl flex flex-col">
+                <div className="p-2 m-2 border-2 overflow-y-auto scrollbar-thin-report">
                     {!changeToJson ? (
                         <p className="mx-3 text-sm mt-2">
                             Age: 68 Sex: M<br/><br/>
