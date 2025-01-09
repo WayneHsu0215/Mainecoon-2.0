@@ -52,6 +52,15 @@ const SearchResult = ({Result, locate, moreInfo}) => {
     const studyInstanceUID = patientDetails.studyInstanceUID;
     const [seriesUID, setSeriesUID] = useState('');
     const [server, setServer] = useContext(ServerContext);
+    const [currentStudyUid, setCurrentStudyUid] = useState('');
+    const [currentSeriesUid, setCurrentSeriesUid] = useState('');
+    useEffect(() => {
+        const queryParams = new URLSearchParams(window.location.search);
+        const studyUid = queryParams.get('studyUid');
+        const seriesUid = queryParams.get('seriesUid');
+        setCurrentStudyUid(studyUid);
+        setCurrentSeriesUid(seriesUid);
+    }, []);
 
 
     const [oauthToken, setOauthToken] = useState('');
@@ -73,9 +82,7 @@ const SearchResult = ({Result, locate, moreInfo}) => {
         fetchToken();
     }, []);
 
-    const [ann, setAnn] = useState(0)
     useEffect(() => {
-        let Y = 0;
         const fetchData = async () => {
             try {
                 let seriesUid = [];
@@ -109,15 +116,10 @@ const SearchResult = ({Result, locate, moreInfo}) => {
                             seriesUid.push(metadata['0020000E'].Value?.[0]);
                             return metadata['0020000E'].Value?.[0];
                         }
-                        if (Attribute[0] === "ANN") {
-                            Y += 1;
-                        }
                         return false;
                     }
                 }).filter(Boolean));
-
                 setSeriesUID(seriesUid[0]);
-                setAnn(Y);
             } catch (error) {
                 console.error('fetchMetadataFail:', error);
             }
@@ -140,14 +142,15 @@ const SearchResult = ({Result, locate, moreInfo}) => {
     };
 
     const showExtraImageOnClick = (image) => {
-        // window.open(`../viewer?server=${server}&studyUid=${studyInstanceUID}&seriesUid=${image}`);
         location.href = `../viewer?server=${server}&studyUid=${studyInstanceUID}&seriesUid=${image}`;
     }
 
     const PreviewCard = ({onClick, patientDetails, seriesUID, studyInstanceUID, server}) => (<div
         onClick={onClick}
-        className="border border-gray-300 rounded-md m-1 p-2 shadow-sm bg-white transition-all duration-300
-            hover:border-2 hover:border-green-500 hover:shadow-sm hover:shadow-green-500 hover:bg-green-100"
+        className={`border border-gray-300 rounded-md m-1 p-2 shadow-sm bg-white transition-all duration-300
+            hover:border-2 hover:border-green-500 hover:shadow-sm hover:shadow-green-500 hover:bg-green-100 
+            ${currentStudyUid === studyInstanceUID ? "bg-green-100 shadow-green-500 shadow-sm border-2 border-green-500": ""}`}
+
     >
         <div className="w-full items-center text-gray-600">
             <div className="w-full text-base justify-center">
@@ -166,8 +169,9 @@ const SearchResult = ({Result, locate, moreInfo}) => {
 
     const CompactCard = ({onClick, patientDetails}) => (<div
         onClick={onClick}
-        className="w-full flex flex-row py-3 border border-gray-300 rounded-md m-1 shadow-sm bg-white transition-all duration-300
-            hover:border-2 hover:border-green-500 hover:shadow-sm hover:shadow-green-500 hover:bg-green-100"
+        className={`w-full flex flex-row py-3 border border-gray-300 rounded-md m-1 shadow-sm bg-white transition-all duration-300
+            hover:border-2 hover:border-green-500 hover:shadow-sm hover:shadow-green-500 hover:bg-green-100 
+            ${currentStudyUid === studyInstanceUID ? "bg-green-100 shadow-green-500 shadow-sm border-2 border-green-500": ""}`}
     >
         <div className="w-full flex items-center text-gray-600">
             <div className="w-full text-base justify-center">
@@ -178,14 +182,6 @@ const SearchResult = ({Result, locate, moreInfo}) => {
         </div>
     </div>);
 
-    // // 選擇按鈕元素
-    // const mySpace = document.getElementById('space');
-    //
-    // // 設置點擊事件監聽器
-    // mySpace?.addEventListener('click', function() {
-    //     setShowExtra(false);
-    //     console.log('點擊了空白處');
-    // });
 
     const parentRef = useRef(null); // 引用母組件
     const [position, setPosition] = useState({top: 0, left: 0});
@@ -208,6 +204,7 @@ const SearchResult = ({Result, locate, moreInfo}) => {
 
         return () => clearInterval(interval); // 清除定時器
     }, []); // 只需要在組件掛載時啟動一次
+
 
 
     return (<>
@@ -245,7 +242,8 @@ const SearchResult = ({Result, locate, moreInfo}) => {
                 </td>
             </tr>
         ) : (
-            locate === 'viewer' && (<>
+            locate === 'viewer' && (
+                <>
                 <div className="w-full relative">
                     {previewImage?.length > 1 ? (
                         moreInfo ? (<>
@@ -281,8 +279,17 @@ const SearchResult = ({Result, locate, moreInfo}) => {
                             <>
                                 <div className="flex" ref={parentRef}>
                                     <CompactCard onClick={OnClick} patientDetails={patientDetails}/>
-                                    <button onMouseOver={toggleExtra}
-                                            className="p-1.5 my-1 bg-green-300 rounded-md text-white">{showExtra ? "<" : ">"}</button>
+                                    <button onClick={toggleExtra}
+                                            className={`p-1.5 my-1 text-white rounded ${showExtra ? "bg-red-300" : "bg-green-300"}`}
+                                    ><span
+                                        style={{
+                                            display: "inline-block",
+                                            transform: showExtra ? "rotate(90deg)" : "rotate(0deg)",
+                                            transition: "transform 0.3s ease", // 平滑过渡效果
+                                        }}
+                                    >
+                                        {showExtra ? "x" : ">"}
+                                      </span></button>
                                 </div>
                             </>
 
@@ -313,13 +320,18 @@ const SearchResult = ({Result, locate, moreInfo}) => {
                                             className="mx-1 my-1"
                                             onClick={() => showExtraImageOnClick(image)}
                                         >
-                                            <div className="border border-gray-300 rounded-md m-1 p-2 shadow-sm bg-white transition-all duration-300
-                                                hover:border-2 hover:border-green-500 hover:shadow-sm hover:shadow-green-500 hover:bg-green-100">
+                                            <div
+                                                className={`border border-gray-300 rounded-md m-1 p-2 shadow-sm bg-white transition-all duration-300
+                                                hover:border-2 hover:border-green-500 hover:shadow-sm hover:shadow-green-500 hover:bg-green-100
+                                                ${currentSeriesUid === null ? currentStudyUid === studyInstanceUID ? "bg-green-100 shadow-green-500 shadow-sm border-2 border-green-500" 
+                                                    : "bg-blue-600" : currentSeriesUid === image ? "bg-green-100 shadow-green-500 shadow-sm border-2 border-green-500" : ""}`}
+                                            >
                                                 <div className="w-full items-center text-gray-600">
                                                     <div className="w-full text-base justify-center">
                                                         <span
                                                             className="flex justify-center break-all font-medium text-gray-800">
-                                                            {patientDetails.patientID}_{patientDetails.patientSex}_{index}
+
+                                                            {patientDetails.patientID}_{patientDetails.patientSex}_{index+1}
                                                         </span>
                                                         <div className="p-2 mx-4">
                                                             <Thumbnail seriesUid={image} studyUid={studyInstanceUID}
@@ -346,12 +358,15 @@ const SearchResult = ({Result, locate, moreInfo}) => {
                                             onClick={() => showExtraImageOnClick(image)}
                                         >
                                             <div
-                                                className="w-full flex flex-row border border-gray-300 rounded-md shadow-sm bg-white transition-all duration-300
-                                                hover:border-2 hover:border-green-500 hover:shadow-sm hover:shadow-green-500 hover:bg-green-100">
+                                                className={`w-full flex flex-row border border-gray-300 rounded-md shadow-sm bg-white transition-all duration-300
+                                                hover:border-2 hover:border-green-500 hover:shadow-sm hover:shadow-green-500 hover:bg-green-100
+                                                ${currentSeriesUid === null ? currentStudyUid === studyInstanceUID ? "bg-green-100 shadow-green-500 shadow-sm border-2 border-green-500"
+                                                    : "bg-blue-600" : currentSeriesUid === image ? "bg-green-100 shadow-green-500 shadow-sm border-2 border-green-500" : ""}`}
+                                            >
                                                 <div className="w-32 flex items-center text-gray-600 p-3 ">
                                                     <div className="w-full text-base justify-center">
                                                     <span className="flex justify-center font-medium text-gray-800">
-                                                        {patientDetails.patientID}_Slide{index}
+                                                        {patientDetails.patientID}_Slide{index+1}
                                                     </span>
                                                     </div>
                                                 </div>

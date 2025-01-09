@@ -254,7 +254,7 @@ const ImageList = ({handleSlideDrawerOpen, isSlidesOpen}) => {
                                                 {image?.map((result) => (
                                                     <tr key={result.id}>
                                                         <td className="w-full">
-                                                            <div className="flex w-80 h-full  ">
+                                                            <div className={`flex ${!isSearch ? ("w-80"):("w-full")} h-full  `}>
                                                                 <SearchResult Result={result} locate="viewer"
                                                                               moreInfo={moreInfo}/>
                                                             </div>
@@ -284,7 +284,7 @@ const ImageList = ({handleSlideDrawerOpen, isSlidesOpen}) => {
                             className="absolute bottom-0 left-0 right-0 flex items-center py-2 px-1 mt-1 z-10  border-t bg-white bg-opacity-60 hover:bg-opacity-100">
                             <div className="flex flex-row justify-between w-full items-center mx-1">
                                 <button
-                                    className="flex items-center justify-between gap-3 bg-green-400 hover:bg-green-600 text-white font-bold rounded px-3 py-1"
+                                    className="flex items-center justify-between gap-3 bg-green-400 hover:bg-green-600 text-white font-bold rounded px-3.5 py-2"
                                     onClick={handlePreviousPage} disabled={pageOffset === 0 && pageLimit > 0}
                                 >
                                     {'<'}
@@ -296,7 +296,7 @@ const ImageList = ({handleSlideDrawerOpen, isSlidesOpen}) => {
                                         min="1"
                                         name="limit"
                                         value={pageLimit}
-                                        className="w-20 h-7 border-2 text-center border-gray-200 rounded ml-2"
+                                        className="w-14 h-7 border-2 text-center border-gray-200 rounded ml-2"
                                         placeholder="Page Limit"
                                         onChange={(e) => handlePageLimitChange(e)}
                                     />
@@ -308,13 +308,13 @@ const ImageList = ({handleSlideDrawerOpen, isSlidesOpen}) => {
                                         min="0"
                                         name="offset"
                                         value={pageOffset}
-                                        className="w-20 h-7 border-2 text-center border-gray-200 rounded ml-2"
+                                        className="w-14 h-7 border-2 text-center border-gray-200 rounded ml-2"
                                         placeholder="PageOffset"
                                         onChange={(e) => handlePageOffsetChange(e)}
                                     />
                                 </div>
                                 <button
-                                    className="flex items-center bg-green-400 hover:bg-green-600 text-white font-bold rounded px-3 py-1"
+                                    className="flex items-center bg-green-400 hover:bg-green-600 text-white font-bold rounded px-3.5 py-2"
                                     onClick={handleNextPage}
                                     disabled={pageLimitGTResultLeft}
                                 >
