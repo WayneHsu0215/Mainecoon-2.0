@@ -7,9 +7,10 @@ import SearchForm from "./SearchForm.jsx";
 import {CombineSearchURL} from "../../lib/search/index.js";
 
 import {ImageContext} from "../../lib/ImageContext.jsx";
+import {Icon} from "@iconify/react";
 
-const SearchPageHeader = ({setSearchResults, pageLimit, pageOffset, setHandleNextPageChange,setIsLoading}) => {
-    const [server, setServer] = useContext(ServerContext)
+const SearchPageHeader = ({setSearchResults, pageLimit, pageOffset, setHandleNextPageChange, setIsLoading}) => {
+    const [server] = useContext(ServerContext)
     const [isMouseOn, setIsMouseOn] = useState(false);
     const myRef = useRef(null);
     const [parameter, setParameter] = useState({
@@ -34,6 +35,7 @@ const SearchPageHeader = ({setSearchResults, pageLimit, pageOffset, setHandleNex
             setIsLoading(false)
         })
     }, []);
+
 
     useEffect(() => {
         setIsLoading(true);
@@ -75,6 +77,36 @@ const SearchPageHeader = ({setSearchResults, pageLimit, pageOffset, setHandleNex
         mouseOutFun()
     });
 
+    const lastStudyInstanceUID = localStorage.getItem('studyUid');
+    const lastSeriesInstanceUID = localStorage.getItem('seriesUid');
+    const [isHasLastStudyInstanceUID, setIsHasLastStudyInstanceUID] = useState(false);
+    const [isHasLastSeriesInstanceUID, setIsHasLastSeriesInstanceUID] = useState(false);
+
+    const checkLastAllUID = () => {
+        if (lastStudyInstanceUID !== null) {
+            setIsHasLastStudyInstanceUID(true);
+        }
+        if (lastSeriesInstanceUID !== null) {
+            setIsHasLastSeriesInstanceUID(true);
+        }
+    }
+
+    useEffect(() => {
+        checkLastAllUID();
+    }, []);
+
+
+    function OnClick() {
+        if (isHasLastStudyInstanceUID === false || isHasLastSeriesInstanceUID === false) {
+            return;
+        }
+        if (lastSeriesInstanceUID === null) {
+            location.href = `../viewer?server=${server}&studyUid=${lastStudyInstanceUID}`
+        } else {
+            location.href = `../viewer?server=${server}&studyUid=${lastStudyInstanceUID}&seriesUid=${lastSeriesInstanceUID}`
+        }
+    }
+
     return <>
         <div className="sticky m-0 top-0 p-0 w-full z-50">
             <div className="text-white bg-green-600 p-1 ">
@@ -85,8 +117,15 @@ const SearchPageHeader = ({setSearchResults, pageLimit, pageOffset, setHandleNex
                                 <img src={mainecoon} alt="maincoon"/>
                             </Link>
                             <h1 className="text-2xl mt-2 ml-2 mr-5 font-bold font-serif">MAINECOON</h1>
+                            <Link to="/search"
+                                  className="flex bg-white hover:bg-teal-500 rounded-lg px-2 py-2 ml-3 mt-2 mb-1 text-black
+                                    hover:text-white items-center transition-colors duration-200 ease-in-out"
+                                  onClick={OnClick}>
+                                <Icon icon="fluent:rewind-20-filled" width="20" height="20" />
+                                <span className="sm:inline hidden ml-1 items-center">Restore</span>
+                            </Link>
                         </div>
-                        <div className="ml-32">
+                        <div className="ml-20">
                             <div ref={myRef} className="" onMouseOver={mouseOnFun}>
                                 <div className="my-2 mx-4">
                                     <div className="flex flex-fill flex-column border-b border-white">
@@ -128,20 +167,7 @@ const SearchPageHeader = ({setSearchResults, pageLimit, pageOffset, setHandleNex
                     </div>
 
                     <div className="flex flex-row justify-center items-center ">
-                    {/*<Link to="http://localhost:3006/#/image">*/}
-                    {/*<div className="flex flex-col justify-center items-center mt-1 hover:bg-gray-100/30 hover:rounded-xl py-2 px-4">*/}
-                    {/*    <Icon icon="material-symbols:image-outline" className="w-10 h-6  "/>*/}
-                    {/*<p className="text-white text-lg  ">影像</p>*/}
-                    {/*</div>*/}
-                    {/*</Link>*/}
-                    {/*<Link to="http://localhost:3006/#/setting">*/}
-                    {/*    <div className="flex flex-col justify-center items-center mt-1 hover:bg-gray-100/30 hover:rounded-xl py-2 px-4">*/}
-                    {/*        <Icon icon="uil:setting" className="w-10 h-6  "/>*/}
-                    {/*        <p className="text-white text-lg  ">設定</p>*/}
-                    {/*    </div>*/}
-                    {/*</Link>*/}
-
-                    <Server/>
+                        <Server/>
                     </div>
                 </div>
             </div>

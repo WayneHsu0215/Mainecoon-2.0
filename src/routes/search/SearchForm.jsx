@@ -17,11 +17,10 @@ const SearchForm = ({
     const [server, setServer] = useContext(ServerContext)
 
 
-    const handleQueryParameterChange = (e,name) => {
+    const handleQueryParameterChange = (e, name) => {
         const value = e.target.value
         setParameter({...parameter, [name]: value})
     }
-
 
     const searchBtnOnClick = async (e) => {
         e.preventDefault()
@@ -77,7 +76,7 @@ const SearchForm = ({
                             className={`border-2  p-2 rounded-lg text-black w-full ${location === "SearchPageHeader" ? "m-2" : "m-1"}`}
                             name={name} value={parameter[name]}
                             onChange={(e) => {
-                                handleQueryParameterChange(e,name)
+                                handleQueryParameterChange(e, name)
                             }}
                         />
                     )}

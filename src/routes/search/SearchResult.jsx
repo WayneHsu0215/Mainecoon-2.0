@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import {useContext, useEffect, useRef, useState} from 'react';
 import {Icon} from "@iconify/react";
 import {combineUrl, fetchPatientDetails} from "../../lib/search/index.js";
 import {ServerContext} from "../../lib/ServerContext.jsx";
@@ -54,16 +54,25 @@ const SearchResult = ({Result, locate, moreInfo}) => {
     const [server, setServer] = useContext(ServerContext);
     const [currentStudyUid, setCurrentStudyUid] = useState('');
     const [currentSeriesUid, setCurrentSeriesUid] = useState('');
+    const [oauthToken, setOauthToken] = useState('');
+    const genderData = {
+        F: {bgColor: "bg-pink-500", icon: "ph:gender-female-bold", label: "Female",},
+        M: {bgColor: "bg-blue-600", icon: "tdesign:gender-male", label: "Male",},
+        default: {bgColor: "bg-green-600/80", icon: "ion:male-female", label: "Other"},
+    }
+    const gender = genderData[patientDetails.patientSex] || genderData.default;
+    const [showExtra, setShowExtra] = useState(false);
+
     useEffect(() => {
         const queryParams = new URLSearchParams(window.location.search);
         const studyUid = queryParams.get('studyUid');
         const seriesUid = queryParams.get('seriesUid');
+        if (studyUid) localStorage.setItem('studyUid', studyUid);
+        if(!seriesUid) localStorage.removeItem('seriesUid')
+        else localStorage.setItem('seriesUid', seriesUid);
         setCurrentStudyUid(studyUid);
         setCurrentSeriesUid(seriesUid);
     }, []);
-
-
-    const [oauthToken, setOauthToken] = useState('');
 
     function OnClick() {
         location.href = `../viewer?server=${server}&studyUid=${studyInstanceUID}`
@@ -127,16 +136,6 @@ const SearchResult = ({Result, locate, moreInfo}) => {
         fetchData();
     }, [server, studyInstanceUID]);
 
-    const genderData = {
-        F: {bgColor: "bg-pink-500", icon: "ph:gender-female-bold", label: "Female",},
-        M: {bgColor: "bg-blue-600", icon: "tdesign:gender-male", label: "Male",},
-        default: {bgColor: "bg-green-600/80", icon: "ion:male-female", label: "Other"},
-    }
-
-    const gender = genderData[patientDetails.patientSex] || genderData.default;
-
-    const [showExtra, setShowExtra] = useState(false);
-
     const toggleExtra = () => {
         setShowExtra(!showExtra);
     };
@@ -149,7 +148,7 @@ const SearchResult = ({Result, locate, moreInfo}) => {
         onClick={onClick}
         className={`border border-gray-300 rounded-md m-1 p-2 shadow-sm bg-white transition-all duration-300
             hover:border-2 hover:border-green-500 hover:shadow-sm hover:shadow-green-500 hover:bg-green-100 
-            ${currentStudyUid === studyInstanceUID ? "bg-green-100 shadow-green-500 shadow-sm border-2 border-green-500": ""}`}
+            ${currentStudyUid === studyInstanceUID ? "bg-green-100 shadow-green-500 shadow-sm border-2 border-green-500" : ""}`}
 
     >
         <div className="w-full items-center text-gray-600">
@@ -171,7 +170,7 @@ const SearchResult = ({Result, locate, moreInfo}) => {
         onClick={onClick}
         className={`w-full flex flex-row py-3 border border-gray-300 rounded-md m-1 shadow-sm bg-white transition-all duration-300
             hover:border-2 hover:border-green-500 hover:shadow-sm hover:shadow-green-500 hover:bg-green-100 
-            ${currentStudyUid === studyInstanceUID ? "bg-green-100 shadow-green-500 shadow-sm border-2 border-green-500": ""}`}
+            ${currentStudyUid === studyInstanceUID ? "bg-green-100 shadow-green-500 shadow-sm border-2 border-green-500" : ""}`}
     >
         <div className="w-full flex items-center text-gray-600">
             <div className="w-full text-base justify-center">
@@ -183,7 +182,7 @@ const SearchResult = ({Result, locate, moreInfo}) => {
     </div>);
 
 
-    const parentRef = useRef(null); // 引用母組件
+    const parentRef = useRef(null);
     const [position, setPosition] = useState({top: 0, left: 0});
 
     // 即時更新位置的 effect
@@ -199,12 +198,9 @@ const SearchResult = ({Result, locate, moreInfo}) => {
             }
         };
 
-        // 監聽母組件的即時位置變化
         const interval = setInterval(updatePosition, 16); // 約 60fps 更新位置
-
         return () => clearInterval(interval); // 清除定時器
     }, []); // 只需要在組件掛載時啟動一次
-
 
 
     return (<>
@@ -244,23 +240,23 @@ const SearchResult = ({Result, locate, moreInfo}) => {
         ) : (
             locate === 'viewer' && (
                 <>
-                <div className="w-full relative">
-                    {previewImage?.length > 1 ? (
-                        moreInfo ? (<>
-                            <div className="w-full" ref={parentRef}>
-                                <div className="flex flex-row">
-                                    <div className="w-full">
-                                        <PreviewCard
-                                            patientDetails={patientDetails}
-                                            seriesUID={seriesUID}
-                                            studyInstanceUID={studyInstanceUID}
-                                            server={server}
-                                        />
-                                    </div>
-                                    <button
-                                        onClick={toggleExtra}
-                                        className={`p-1.5 my-1 text-white ${showExtra ? "bg-red-300" : "bg-green-300"}`}
-                                    >
+                    <div className="w-full relative">
+                        {previewImage?.length > 1 ? (
+                            moreInfo ? (<>
+                                <div className="w-full" ref={parentRef}>
+                                    <div className="flex flex-row">
+                                        <div className="w-full">
+                                            <PreviewCard
+                                                patientDetails={patientDetails}
+                                                seriesUID={seriesUID}
+                                                studyInstanceUID={studyInstanceUID}
+                                                server={server}
+                                            />
+                                        </div>
+                                        <button
+                                            onClick={toggleExtra}
+                                            className={`p-1.5 my-1 text-white ${showExtra ? "bg-red-300" : "bg-green-300"}`}
+                                        >
                                       <span
                                           style={{
                                               display: "inline-block",
@@ -270,113 +266,113 @@ const SearchResult = ({Result, locate, moreInfo}) => {
                                       >
                                         {showExtra ? "x" : ">"}
                                       </span>
-                                    </button>
+                                        </button>
 
+                                    </div>
                                 </div>
-                            </div>
 
-                        </>) : (
-                            <>
-                                <div className="flex" ref={parentRef}>
-                                    <CompactCard onClick={OnClick} patientDetails={patientDetails}/>
-                                    <button onClick={toggleExtra}
-                                            className={`p-1.5 my-1 text-white rounded ${showExtra ? "bg-red-300" : "bg-green-300"}`}
-                                    ><span
-                                        style={{
-                                            display: "inline-block",
-                                            transform: showExtra ? "rotate(90deg)" : "rotate(0deg)",
-                                            transition: "transform 0.3s ease", // 平滑过渡效果
-                                        }}
-                                    >
+                            </>) : (
+                                <>
+                                    <div className="flex" ref={parentRef}>
+                                        <CompactCard onClick={OnClick} patientDetails={patientDetails}/>
+                                        <button onClick={toggleExtra}
+                                                className={`p-1.5 my-1 text-white rounded ${showExtra ? "bg-red-300" : "bg-green-300"}`}
+                                        ><span
+                                            style={{
+                                                display: "inline-block",
+                                                transform: showExtra ? "rotate(90deg)" : "rotate(0deg)",
+                                                transition: "transform 0.3s ease", // 平滑过渡效果
+                                            }}
+                                        >
                                         {showExtra ? "x" : ">"}
                                       </span></button>
-                                </div>
-                            </>
+                                    </div>
+                                </>
 
-                        )) : (
-                        previewImage.map((seriesUid) => (
+                            )) : (
+                            previewImage.map((seriesUid) => (
+                                moreInfo ? (
+                                    <div key={seriesUid} className="w-full">
+                                        <PreviewCard
+                                            onClick={OnClick}
+                                            patientDetails={patientDetails}
+                                            seriesUID={seriesUid}
+                                            studyInstanceUID={studyInstanceUID}
+                                            server={server}
+                                        />
+                                    </div>) : (
+                                    <CompactCard key={seriesUid} onClick={OnClick} patientDetails={patientDetails}/>
+                                ))))}
+                    </div>
+                    {showExtra &&
+                        (
                             moreInfo ? (
-                                <div key={seriesUid} className="w-full">
-                                    <PreviewCard
-                                        onClick={OnClick}
-                                        patientDetails={patientDetails}
-                                        seriesUID={seriesUid}
-                                        studyInstanceUID={studyInstanceUID}
-                                        server={server}
-                                    />
-                                </div>) : (
-                                <CompactCard key={seriesUid} onClick={OnClick} patientDetails={patientDetails}/>
-                            ))))}
-                </div>
-                {showExtra &&
-                    (
-                        moreInfo ? (
-                            <div className="w-auto absolute bg-white shadow-lg z-50 rounded-md ml-1.5  "
-                                 style={{top: position.top - 60, left: position.left}}>
-                                <div className="flex border border-gray-200 rounded-md shadow-md py-1 px-1">
-                                    {previewImage.map((image, index) => (
-                                        <div
-                                            key={index}
-                                            className="mx-1 my-1"
-                                            onClick={() => showExtraImageOnClick(image)}
-                                        >
+                                <div className="w-auto absolute bg-white shadow-lg z-50 rounded-md ml-1.5  "
+                                     style={{top: position.top - 60, left: position.left}}>
+                                    <div className="flex border border-gray-200 rounded-md shadow-md py-1 px-1">
+                                        {previewImage.map((image, index) => (
                                             <div
-                                                className={`border border-gray-300 rounded-md m-1 p-2 shadow-sm bg-white transition-all duration-300
-                                                hover:border-2 hover:border-green-500 hover:shadow-sm hover:shadow-green-500 hover:bg-green-100
-                                                ${currentSeriesUid === null ? currentStudyUid === studyInstanceUID ? "bg-green-100 shadow-green-500 shadow-sm border-2 border-green-500" 
-                                                    : "bg-blue-600" : currentSeriesUid === image ? "bg-green-100 shadow-green-500 shadow-sm border-2 border-green-500" : ""}`}
+                                                key={index}
+                                                className="mx-1 my-1"
+                                                onClick={() => showExtraImageOnClick(image)}
                                             >
-                                                <div className="w-full items-center text-gray-600">
-                                                    <div className="w-full text-base justify-center">
-                                                        <span
-                                                            className="flex justify-center break-all font-medium text-gray-800">
-
-                                                            {patientDetails.patientID}_{patientDetails.patientSex}_{index+1}
-                                                        </span>
-                                                        <div className="p-2 mx-4">
-                                                            <Thumbnail seriesUid={image} studyUid={studyInstanceUID}
-                                                                       server={server}/>
-                                                        </div>
-                                                        <span
-                                                            className="flex justify-center break-all font-medium text-gray-800">
-                                                            {patientDetails.accessionNumber}_{patientDetails.studyDate}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>))}
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="w-auto absolute bg-white z-50 rounded-md ml-3 "
-                                 style={{top: position.top - 58, left: position.left}}>
-                                <div className="flex flex-col border rounded-md shadow-lg border-gray-300 py-1">
-                                    {previewImage.map((image, index) => (
-                                        <div
-                                            key={index}
-                                            className="mx-2 my-1"
-                                            onClick={() => showExtraImageOnClick(image)}
-                                        >
-                                            <div
-                                                className={`w-full flex flex-row border border-gray-300 rounded-md shadow-sm bg-white transition-all duration-300
+                                                <div
+                                                    className={`border border-gray-300 rounded-md m-1 p-2 shadow-sm bg-white transition-all duration-300
                                                 hover:border-2 hover:border-green-500 hover:shadow-sm hover:shadow-green-500 hover:bg-green-100
                                                 ${currentSeriesUid === null ? currentStudyUid === studyInstanceUID ? "bg-green-100 shadow-green-500 shadow-sm border-2 border-green-500"
-                                                    : "bg-blue-600" : currentSeriesUid === image ? "bg-green-100 shadow-green-500 shadow-sm border-2 border-green-500" : ""}`}
+                                                        : "bg-blue-600" : currentSeriesUid === image ? "bg-green-100 shadow-green-500 shadow-sm border-2 border-green-500" : ""}`}
+                                                >
+                                                    <div className="w-full items-center text-gray-600">
+                                                        <div className="w-full text-base justify-center">
+                                                        <span
+                                                            className="flex justify-center break-all font-medium text-gray-800">
+
+                                                            {patientDetails.patientID}_{patientDetails.patientSex}_{index + 1}
+                                                        </span>
+                                                            <div className="p-2 mx-4">
+                                                                <Thumbnail seriesUid={image} studyUid={studyInstanceUID}
+                                                                           server={server}/>
+                                                            </div>
+                                                            <span
+                                                                className="flex justify-center break-all font-medium text-gray-800">
+                                                            {patientDetails.accessionNumber}_{patientDetails.studyDate}
+                                                        </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>))}
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="w-auto absolute bg-white z-50 rounded-md ml-3 "
+                                     style={{top: position.top - 58, left: position.left}}>
+                                    <div className="flex flex-col border rounded-md shadow-lg border-gray-300 py-1">
+                                        {previewImage.map((image, index) => (
+                                            <div
+                                                key={index}
+                                                className="mx-2 my-1"
+                                                onClick={() => showExtraImageOnClick(image)}
                                             >
-                                                <div className="w-32 flex items-center text-gray-600 p-3 ">
-                                                    <div className="w-full text-base justify-center">
+                                                <div
+                                                    className={`w-full flex flex-row border border-gray-300 rounded-md shadow-sm bg-white transition-all duration-300
+                                                hover:border-2 hover:border-green-500 hover:shadow-sm hover:shadow-green-500 hover:bg-green-100
+                                                ${currentSeriesUid === null ? currentStudyUid === studyInstanceUID ? "bg-green-100 shadow-green-500 shadow-sm border-2 border-green-500"
+                                                        : "bg-blue-600" : currentSeriesUid === image ? "bg-green-100 shadow-green-500 shadow-sm border-2 border-green-500" : ""}`}
+                                                >
+                                                    <div className="w-32 flex items-center text-gray-600 p-3 ">
+                                                        <div className="w-full text-base justify-center">
                                                     <span className="flex justify-center font-medium text-gray-800">
-                                                        {patientDetails.patientID}_Slide{index+1}
+                                                        {patientDetails.patientID}_Slide{index + 1}
                                                     </span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    ))}
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-            </>)
+                            ))}
+                </>)
         )}</>)
 }
 

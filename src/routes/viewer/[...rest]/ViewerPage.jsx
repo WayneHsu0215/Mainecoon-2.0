@@ -3,22 +3,16 @@ import MicroscopyViewer from './MicroscopyViewer';
 import {combineUrl, fetchPatientDetails, generateSeriesUID} from "../../../lib/search/index.js";
 import {Icon} from "@iconify/react";
 import ViewerPageHeader from "./ViewerHeader.jsx";
-import LeftDrawer from "./LeftDrawer.jsx"
 import {Report} from "../../report/Report.jsx";
 import {getAnnotations, getImagingInfo, getSeriesInfo} from '../../../lib/dicom-webs/series';
 import {DICOMWEB_URLS} from '../../../lib/dicom-webs';
-import {getSlideLabel, getSpecimenList} from "../../../lib/image/index.js";
+import {getSlideLabel} from "../../../lib/image/index.js";
 import RightDrawer from "./RightDrawer.jsx";
 import {AnnotationsContext} from "../../../lib/AnnotaionsContext.jsx";
 import {easeOut} from "ol/easing.js";
-import {Circle, Fill, Stroke, Style} from "ol/style";
-import {Feature, Overlay} from "ol";
-import {Point} from "ol/geom.js";
-import {Vector} from "ol/layer.js";
-import VectorSource from "ol/source/Vector";
+import {Overlay} from "ol";
 import {toast} from "react-toastify";
 import {ImageList} from "../AllData/ImageList.jsx";
-import {useLocation} from "react-router-dom";
 
 const ViewerPage = () => {
     const searchParams = new URLSearchParams(window.location.search)

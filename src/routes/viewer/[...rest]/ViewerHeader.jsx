@@ -15,10 +15,7 @@ import {combineUrl} from "../../../lib/search/index.js";
 
 const ViewerPageHeader = ({
                               DrawColor,
-                              detail,
                               save,
-                              isLeftOpen,
-                              isReportOpen,
                               onMessageChange,
                               studyUid,
                               seriesUid,
@@ -26,13 +23,11 @@ const ViewerPageHeader = ({
                               handleInfoOpen
                           }) => {
     const [saveAnnotations, setSaveAnnotations] = save;
-    const [isLeftDrawerOpen, setIsLeftDrawerOpen] = isLeftOpen;
-    const [isShowReport, setIsShowReport] = isReportOpen;
     const [isMouseOn, setIsMouseOn] = useState(false);
     const [isMouseOnPatient, setIsMouseOnPatient] = useState(false);
     const [isMouseOnCase, setIsMouseOnCase] = useState(false);
     const [drawColor, setDrawColor] = DrawColor;
-    const [annotationList, setAnnotationList] = useContext(AnnotationsContext)
+    const [annotationList] = useContext(AnnotationsContext)
     const [okToSave, setOkToSave] = useState(false);
     const [loading, setLoading] = useState(false);
     const accessToken = Cookies.get('access_token');
@@ -165,18 +160,7 @@ const ViewerPageHeader = ({
     const mouseOnFun = () => {
         setIsMouseOn(!isMouseOn);
     };
-    const mouseOnPatientFun = () => {
-        setIsMouseOnPatient(!isMouseOnPatient);
-    }
-    const mouseOnCaseFun = () => {
-        setIsMouseOnCase(!isMouseOnCase);
-    }
 
-    // IPAD觸控
-    const mouseOutFun = () => {
-        setIsMouseOn(false);
-        handleViewer();
-    };
     const mouseOutPatientFun = () => {
         setIsMouseOnPatient(false);
     };
@@ -209,6 +193,8 @@ const ViewerPageHeader = ({
         setDrawColor(rgbaColor);
     }
 
+    const [showDrawerButtonName, setShowDrawerButtonName] = useState(false);
+    const [showSaveButtonName, setShowSaveButtonName] = useState(false);
 
     return (
         <>
@@ -229,50 +215,53 @@ const ViewerPageHeader = ({
                         </Link>
                         <div className="flex items-center">
                             <h1 className="text-2xl ml-2 mr-5 font-bold font-serif tracking-wider">MAINECOON</h1>
+                            <Link to="/search"
+                                className="flex bg-white hover:bg-teal-500 rounded-lg px-2 py-2 ml-3 mt-1 mb-1 text-black
+                            hover:text-white items-center transition-colors duration-200 ease-in-out"
+                                onClick={handleInfoOpen}>
+                                <Icon icon="icon-park-solid:back" width="20" height="20" />
+                                <span className="sm:inline hidden ml-1 items-center">Back</span>
+                            </Link>
                         </div>
+
                     </div>
                     <div className="flex justify-end items-center w-full">
                         <div className="mr-2">
-                            <button className="flex bg-white hover:bg-yellow-500 rounded-lg p-1.5 mr-1 mb-1 text-black items-center"
+                            <button
+                                className="flex bg-white hover:bg-teal-500 rounded-lg p-2 mr-1 mb-1 text-black
+                                hover:text-white items-center transition-colors duration-200 ease-in-out"
                                 onClick={handleInfoOpen}>
                                 <Icon icon="fluent:document-data-16-filled" width="20" height="20"/>
                                 <span className="sm:inline hidden ml-1 items-center">INFO</span>
                             </button>
                         </div>
-                        <div ref={myRef} onClick={mouseOnFun} className={`mr-2 ${imageLoading ? 'pointer-events-none opacity-50' : ''}`}>
-                            <button className="bg-white hover:bg-yellow-500 rounded-lg p-1.5 mr-1 mb-1 block">
-                                <Icon icon="mdi:tag-edit" className="text-black h-5 w-5"/>
+                        <div ref={myRef}
+                             onClick={mouseOnFun}
+                             className={`mr-2 ${imageLoading ? 'pointer-events-none opacity-50' : ''}`}
+                             onMouseOver={() => setShowDrawerButtonName(true)}
+                             onMouseLeave={() => setShowDrawerButtonName(false)}
+                        >
+                            <button className="flex bg-white hover:bg-teal-500 rounded-lg p-2 mr-1 mb-1 block text-black
+                 hover:text-white items-center transition-colors duration-200 ease-in-out"
+                            >
+                                <Icon icon="mdi:tag-edit" className="h-5 w-5"/>
+                                {showDrawerButtonName &&
+                                    <span className="sm:inline hidden ml-1 items-center">DRAWER</span>}
                             </button>
                         </div>
+
                         <div className="flex flex-row gap-2">
-                            <button className="bg-white hover:bg-yellow-500 rounded-lg p-1.5 mr-1 mb-1 block"
-                                    onClick={() => handleDraw('cancel', '')}>
-                                <Icon icon="fa6-regular:hand" className="text-black h-5 w-5"/>
-                            </button>
-                            {/*<button className="relative bg-white hover:bg-yellow-500 rounded-lg p-1.5 mr-1 mb-1 block">*/}
-                            {/*    <label className="contents ">*/}
-                            {/*        <span className="h-5 w-5 block" style={{backgroundColor: drawColor}}></span>*/}
-                            {/*        <input*/}
-                            {/*            type="color"*/}
-                            {/*            className="h-5 w-5 absolute tops left-1/2 invisible"*/}
-                            {/*            onChange={(e) => handleDrawColor(e)}*/}
-                            {/*            value={drawColor}*/}
-                            {/*        />*/}
-                            {/*    </label>*/}
-                            {/*</button>*/}
-                            <button className="bg-white hover:bg-blue-400 rounded-lg p-1.5 mr-6 mb-1 block"
+                            <button className="flex bg-white hover:bg-teal-500  rounded-lg p-2 mr-6 mb-1 text-black
+                            hover:text-white items-center transition-colors duration-200 ease-in-out"
                                     onClick={() => handleSaveAnnotations(studyUid, seriesUid)}
+                                    onMouseOver={() => setShowSaveButtonName(true)}
+                                    onMouseLeave={() => setShowSaveButtonName(false)}
                             >
-                                <Icon icon="ant-design:save-outlined" className="text-black h-5 w-5"/>
+                                <Icon icon="ant-design:save-outlined" className="h-5 w-5"/>
+                                {showSaveButtonName &&
+                                    <span className="sm:inline hidden ml-1 items-center">Save</span>
+                                }
                             </button>
-                            {/*<button*/}
-                            {/*    className="bg-white hover:bg-yellow-500 rounded-lg p-1.5 mr-1 mb-1 block"*/}
-                            {/*>*/}
-                            {/*    <Icon icon="gg:undo" className="text-black h-6 w-6"/>*/}
-                            {/*</button>*/}
-                            {/*<button className="ml-4 mr-1 mb-1" style={{transform: 'rotate(180deg)'}}>*/}
-                            {/*    <Icon icon="fluent:list-28-filled" className="text-black h-5 w-5"/>*/}
-                            {/*</button>*/}
                         </div>
                     </div>
                 </div>
@@ -282,6 +271,14 @@ const ViewerPageHeader = ({
                     <GeometryPicker className="flex"
                                     buttonClassName={"bg-white mr-2 hover:bg-green-400 hover:text-white"}
                                     onPick={(type) => handleDraw('drawtype', type)}/>
+                    <button
+                        type="button"
+                        className=" flex rounded p-2 bg-white mr-2 hover:bg-green-400 hover:text-white"
+                        onClick={() => handleDraw('cancel', '')}
+                    >
+                        <Icon icon="fa6-regular:hand" className="mr-2 h-4 w-4 mt-0.5"/>
+                        <span className="text-sm">Cancel</span>
+                    </button>
                 </div>
             </Modal>
         </>)
