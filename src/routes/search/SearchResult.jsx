@@ -68,8 +68,9 @@ const SearchResult = ({Result, locate, moreInfo}) => {
         const studyUid = queryParams.get('studyUid');
         const seriesUid = queryParams.get('seriesUid');
         if (studyUid) localStorage.setItem('studyUid', studyUid);
-        if(!seriesUid) localStorage.removeItem('seriesUid')
-        else localStorage.setItem('seriesUid', seriesUid);
+        if(seriesUid) localStorage.setItem('seriesUid', seriesUid);
+        else if (studyUid && seriesUid === null) localStorage.removeItem('seriesUid');
+
         setCurrentStudyUid(studyUid);
         setCurrentSeriesUid(seriesUid);
     }, []);

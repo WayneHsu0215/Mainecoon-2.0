@@ -97,7 +97,7 @@ const SearchPageHeader = ({setSearchResults, pageLimit, pageOffset, setHandleNex
 
 
     function OnClick() {
-        if (isHasLastStudyInstanceUID === false || isHasLastSeriesInstanceUID === false) {
+        if (isHasLastStudyInstanceUID === false && isHasLastSeriesInstanceUID === false) {
             return;
         }
         if (lastSeriesInstanceUID === null) {
