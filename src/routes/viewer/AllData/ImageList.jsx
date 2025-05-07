@@ -22,6 +22,12 @@ const ImageList = ({handleSlideDrawerOpen, isSlidesOpen}) => {
         StudyID: undefined
     })
 
+    const url = location.href;
+    const params = new URLSearchParams(new URL(url).search);
+    setServer(params.get('server'));
+
+
+
     const [isLoading, setIsLoading] = useState(false);
     const [isMouseOn, setIsMouseOn] = useState(false);
 
@@ -86,6 +92,7 @@ const ImageList = ({handleSlideDrawerOpen, isSlidesOpen}) => {
         const newOffset = newPageOffset()
         setPageOffset(newOffset)
         const searchUrl = CombineSearchURL(parameter, server, pageLimit, newOffset);
+
         fetch(searchUrl)
             .then(response => {
                 if (response.ok) {
