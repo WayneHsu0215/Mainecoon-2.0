@@ -92,9 +92,20 @@ const SearchForm = ({
                 }
             </form>
         ) : (
-            <button type="submit" className="border-2 m-2 rounded-lg p-3 bg-green-500 text-white"
-                    onClick={searchBtnOnClick}>Search</button>
+            <div>
+                <button type="submit" className="border-2 m-2 rounded-lg p-3 bg-green-500 text-white"
+                        onClick={searchBtnOnClick}>Search
+                </button>
+                <button
+                    onClick={toggleAdvancedSearch}
+                    className="border-2 m-2 rounded-lg p-3 bg-green-500 text-white">
+                    進階條件
+                </button>
+            </div>
+
+
         )
+
     )
 }
 
