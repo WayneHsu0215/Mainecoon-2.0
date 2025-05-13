@@ -107,6 +107,12 @@ const SearchPageHeader = ({setSearchResults, pageLimit, pageOffset, setHandleNex
         }
     }
 
+    const [showAdvanced, setShowAdvanced] = useState(false);
+
+    const toggleAdvancedSearch = () => {
+        setShowAdvanced(prev => !prev);
+    };
+
     return <>
         <div className="sticky m-0 top-0 p-0 w-full z-50">
             <div className="text-white bg-green-600 p-1 ">
@@ -128,40 +134,44 @@ const SearchPageHeader = ({setSearchResults, pageLimit, pageOffset, setHandleNex
                         <div className="ml-20">
                             <div ref={myRef} className="" onMouseOver={mouseOnFun}>
                                 <div className="my-2 mx-4">
-                                    <div className="flex flex-fill flex-column border-b border-white">
+                                    <div className="flex flex-fill flex-column  border-white">
                                         <SearchForm name="PatientID" setSearchResults={setSearchResults}
                                                     pageLimit={pageLimit} Parameter={[parameter, setParameter]}
                                                     pageOffset={pageOffset} setIsMouseOn={setIsMouseOn}
-                                                    setIsLoading={setIsLoading} location="SearchPageHeader"
+                                                    setIsLoading={setIsLoading} toggleAdvancedSearch={setShowAdvanced} location="SearchPageHeader"
                                         />
+                                        <SearchForm name="PatientName" setSearchResults={setSearchResults}
+                                                    pageLimit={pageLimit} Parameter={[parameter, setParameter]}
+                                                    pageOffset={pageOffset} setIsMouseOn={setIsMouseOn}
+                                                    setIsLoading={setIsLoading} toggleAdvancedSearch={setShowAdvanced} location="SearchPageHeader"/>
+                                        <button
+                                            onClick={toggleAdvancedSearch}
+                                            className="border-2 m-2 rounded-lg p-3  text-white">
+                                            進階條件
+                                        </button>
+
                                     </div>
+
                                 </div>
-                                <div className="relative ">
-                                    <div
-                                        className={`absolute border-b border-white bg-green-600 rounded-lg -top-4 ${isMouseOn ? '' : "hidden"}`}>
+
+
+                                {showAdvanced && (
+                                    <div className="relative ">
+                                        <div className="absolute border-b border-white bg-green-600 rounded-lg mt-2 ml-96">
                                         <div className="mt-2.5 ml-1 pl-4 pr-4">
-                                            <SearchForm name="PatientName" setSearchResults={setSearchResults}
-                                                        pageLimit={pageLimit} Parameter={[parameter, setParameter]}
-                                                        pageOffset={pageOffset} setIsMouseOn={setIsMouseOn}
-                                                        setIsLoading={setIsLoading} location="SearchPageHeader"/>
-                                            <SearchForm name="StudyInstanceUID" setSearchResults={setSearchResults}
-                                                        pageLimit={pageLimit} Parameter={[parameter, setParameter]}
-                                                        pageOffset={pageOffset} setIsMouseOn={setIsMouseOn}
-                                                        setIsLoading={setIsLoading} location="SearchPageHeader"/>
-                                            <SearchForm name="AccessionNumber" setSearchResults={setSearchResults}
-                                                        pageLimit={pageLimit} Parameter={[parameter, setParameter]}
-                                                        pageOffset={pageOffset} setIsMouseOn={setIsMouseOn}
-                                                        setIsLoading={setIsLoading} location="SearchPageHeader"/>
-                                            <SearchForm name="StudyDate" setSearchResults={setSearchResults}
-                                                        pageLimit={pageLimit} Parameter={[parameter, setParameter]}
-                                                        pageOffset={pageOffset} setIsMouseOn={setIsMouseOn}
-                                                        setIsLoading={setIsLoading} location="SearchPageHeader"/>
-                                        </div>
-                                        <div className="flex justify-end mb-1.5 mr-2 font-bold">
-                                            <button onClick={mouseOutFun}>Close</button>
+                                                <SearchForm name="AccessionNumber" setSearchResults={setSearchResults}
+                                                            pageLimit={pageLimit} Parameter={[parameter, setParameter]}
+                                                            pageOffset={pageOffset} setIsLoading={setIsLoading} toggleAdvancedSearch={setShowAdvanced} location="SearchPageHeader"/>
+                                                <SearchForm name="StudyInstanceUID" setSearchResults={setSearchResults}
+                                                            pageLimit={pageLimit} Parameter={[parameter, setParameter]}
+                                                            pageOffset={pageOffset} setIsLoading={setIsLoading} toggleAdvancedSearch={setShowAdvanced} location="SearchPageHeader"/>
+                                                <SearchForm name="StudyDate" setSearchResults={setSearchResults}
+                                                            pageLimit={pageLimit} Parameter={[parameter, setParameter]}
+                                                            pageOffset={pageOffset} setIsLoading={setIsLoading} toggleAdvancedSearch={setShowAdvanced} location="SearchPageHeader"/>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                )}
                             </div>
                         </div>
                     </div>

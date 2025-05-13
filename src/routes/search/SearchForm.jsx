@@ -11,7 +11,8 @@ const SearchForm = ({
                         setIsMouseOn,
                         setIsLoading,
                         location,
-                        setIsSearch
+                        setIsSearch,
+                        toggleAdvancedSearch
                     }) => {
     const [parameter, setParameter] = Parameter;
     const [server, setServer] = useContext(ServerContext)
@@ -25,6 +26,7 @@ const SearchForm = ({
     const searchBtnOnClick = async (e) => {
         e.preventDefault()
         setIsLoading(true);
+        toggleAdvancedSearch(false); // 自動收起進階搜尋
         const searchUrl = CombineSearchURL(parameter, server, pageLimit, pageOffset);
         fetch(searchUrl)
             .then(response => {
@@ -82,9 +84,10 @@ const SearchForm = ({
                     )}
                 </div>
                 {location === "SearchPageHeader" && (
-                    name === "PatientID" && (
+                    name === "PatientName" && (
                         <button type="submit" className="border-2 m-2 rounded-lg px-2"
                                 onClick={searchBtnOnClick}>Search</button>
+
                     ))
                 }
             </form>
