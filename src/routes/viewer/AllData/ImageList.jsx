@@ -7,7 +7,7 @@ import {Icon} from "@iconify/react";
 
 
 const ImageList = ({handleSlideDrawerOpen, isSlidesOpen}) => {
-    const [server, setServer] = useContext(ServerContext);
+    const [server] = useContext(ServerContext);
     const [image, setImage] = useState();
     const [parameter, setParameter] = useState({
         StudyDateStart: undefined,
@@ -21,10 +21,6 @@ const ImageList = ({handleSlideDrawerOpen, isSlidesOpen}) => {
         StudyInstanceUID: undefined,
         StudyID: undefined
     })
-
-    const url = location.href;
-    const params = new URLSearchParams(new URL(url).search);
-    setServer(params.get('server'));
 
 
 
@@ -262,8 +258,12 @@ const ImageList = ({handleSlideDrawerOpen, isSlidesOpen}) => {
                                                     <tr key={result.id}>
                                                         <td className="w-full">
                                                             <div className={`flex ${!isSearch ? ("w-80"):("w-full")} h-full  `}>
-                                                                <SearchResult Result={result} locate="viewer"
-                                                                              moreInfo={moreInfo}/>
+                                                                <SearchResult
+                                                                    key={result.id}
+                                                                    Result={result}
+                                                                    locate="viewer"
+                                                                    moreInfo={moreInfo}
+                                                                />
                                                             </div>
                                                         </td>
                                                     </tr>

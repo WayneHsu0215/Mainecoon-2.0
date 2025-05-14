@@ -45,13 +45,12 @@ function Thumbnail({seriesUid, studyUid, server}) {
     />);
 }
 
-
 const SearchResult = ({Result, locate, moreInfo}) => {
     const [previewImage, setPreviewImage] = useState([]);
     const patientDetails = fetchPatientDetails(Result);
     const studyInstanceUID = patientDetails.studyInstanceUID;
     const [seriesUID, setSeriesUID] = useState('');
-    const [server, setServer] = useContext(ServerContext);
+    const [server] = useContext(ServerContext);
     const [currentStudyUid, setCurrentStudyUid] = useState('');
     const [currentSeriesUid, setCurrentSeriesUid] = useState('');
     const [oauthToken, setOauthToken] = useState('');
