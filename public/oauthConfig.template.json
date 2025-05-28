@@ -1,7 +1,9 @@
 {
-    "keycloak_url": "URL",
-    "client_id": "client_id",
-    "client_secret": "Secret",
-    "username": "test",
-    "password": "test"
+    "enabled": false,
+    "keycloak_url": "https://keycloak.dicom.tw/realms/raccoon/protocol/openid-connect/token",
+    "client_id": "song-yi-raccoon",
+    "client_secret": "CKYMOZjlWkLvHe7vvQBHnHvcu6JGWYT4",
+    "username": "user",
+    "password": "user",
+    "redirect_uri": "http://localhost:3000"
 }

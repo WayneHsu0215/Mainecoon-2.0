@@ -1,9 +1,9 @@
 {
-    "enabled": false,
-    "keycloak_url": "https://keycloak.dicom.tw/realms/raccoon/protocol/openid-connect/token",
-    "client_id": "song-yi-raccoon",
-    "client_secret": "CKYMOZjlWkLvHe7vvQBHnHvcu6JGWYT4",
-    "username": "user",
-    "password": "user",
+    "enabled": true,
+    "keycloak_url": "https://keycloak.dicom.tw/realms/wsi-demo/protocol/openid-connect/token",
+    "client_id": "wsi-demo",
+    "client_secret": "xuiFm9nJCXZmYIZYlsTZFwEKX82yqe1T",
+    "username": "test",
+    "password": "40d+CgqW*6bYEH^3aZRN",
     "redirect_uri": "http://localhost:3000"
 }
