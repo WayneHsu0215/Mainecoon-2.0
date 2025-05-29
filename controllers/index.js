@@ -121,251 +121,194 @@ const generateGroupID = () => {
 };
 
 
+const normalizeEllipseCoordinates = (coordinates) => {
+    const parsed = coordinates.map(coord => {
+        const [x, y] = coord.replace(/[()]/g, '').split(',').map(parseFloat);
+        return [x, y];
+    });
+
+    const left = parsed.reduce((a, b) => a[0] < b[0] ? a : b);
+    const right = parsed.reduce((a, b) => a[0] > b[0] ? a : b);
+    const top = parsed.reduce((a, b) => a[1] < b[1] ? a : b);
+    const bottom = parsed.reduce((a, b) => a[1] > b[1] ? a : b);
+
+    return [left, right, top, bottom];
+};
+
 const convertBase64 = (items) => {
     let combinedResponses = [];
 
-    // Separate tracking for POLYLINE and POLYGON indexing and coordinates
     let polylineCoordinates = [];
     let polygonCoordinates = [];
-    let polylineCurrentIndex = 1; // Start index for POLYLINE from 1
-    let polygonCurrentIndex = 1; // Start index for POLYGON from 1
+    let polylineCurrentIndex = 1;
+    let polygonCurrentIndex = 1;
     let polylineIndexDict = {};
     let polygonIndexDict = {};
 
-    // Iterate through each item and generate DICOM objects for each type
     items.forEach((item, idx) => {
         if (!item.type || !item.coordinates) {
             throw new Error('Invalid item in the array');
         }
 
-        // Parse coordinates
-        const parsedCoordinates = item.coordinates.map(coord => {
-            const [lat, lon] = coord.replace(/[()]/g, '').split(',').map(parseFloat);
-            return [lat, lon];
-        });
-
         if (item.type === 'POLYLINE') {
-            // For POLYLINE, add coordinates to the combined list and update index dictionary
+            const parsedCoordinates = item.coordinates.map(coord => {
+                const [lat, lon] = coord.replace(/[()]/g, '').split(',').map(parseFloat);
+                return [lat, lon];
+            });
             polylineCoordinates = polylineCoordinates.concat(parsedCoordinates);
             polylineIndexDict[idx] = polylineCurrentIndex;
-            polylineCurrentIndex += parsedCoordinates.length; // Increment index by the length of parsed coordinates * 2
+            polylineCurrentIndex += parsedCoordinates.length;
 
         } else if (item.type === 'POLYGON') {
-            // For POLYGON, add coordinates to the combined list and update index dictionary
+            const parsedCoordinates = item.coordinates.map(coord => {
+                const [lat, lon] = coord.replace(/[()]/g, '').split(',').map(parseFloat);
+                return [lat, lon];
+            });
             polygonCoordinates = polygonCoordinates.concat(parsedCoordinates);
             polygonIndexDict[idx] = polygonCurrentIndex;
-            polygonCurrentIndex += parsedCoordinates.length * 2; // Increment index by the length of parsed coordinates * 2
+            polygonCurrentIndex += parsedCoordinates.length * 2;
 
-        } else {
-            // For other types, create separate DICOM object
-            const encodedCoordinates = getEncodedData(parsedCoordinates);
+        } else if (item.type === 'ELLIPSE') {
+            const ellipseCoords = normalizeEllipseCoordinates(item.coordinates);
+            const encodedCoordinates = getEncodedData(ellipseCoords);
+
             let dicomObject = {
-                "0040A180": {
-                    "vr": "US",
-                    "Value": [1]
-                },
-                "00660016": {
-                    "vr": "OF",
-                    "InlineBinary": encodedCoordinates
-                },
+                "0040A180": { "vr": "US", "Value": [1] },
+                "00660016": { "vr": "OF", "InlineBinary": encodedCoordinates },
                 "0066002F": { "vr": "SQ" },
                 "00660030": { "vr": "SQ" },
-                "006A0003": {
-                    "vr": "UI",
-                    "Value": [generateGroupID()]
-                },
+                "006A0003": { "vr": "UI", "Value": [generateGroupID()] },
                 "006A0005": { "vr": "LO", "Value": [item.GroupName] },
                 "006A0007": { "vr": "CS", "Value": ["MANUAL"] },
                 "006A0009": {
                     "vr": "SQ",
-                    "Value": [
-                        {
-                            "00080100": {
-                                "vr": "SH",
-                                "Value": ["2681000"]
-                            },
-                            "00080102": {
-                                "vr": "SH",
-                                "Value": ["SCT"]
-                            },
-                            "00080104": {
-                                "vr": "LO",
-                                "Value": ["Anatomical Structure"]
-                            }
-                        }
-                    ]
+                    "Value": [{
+                        "00080100": { "vr": "SH", "Value": ["2681000"] },
+                        "00080102": { "vr": "SH", "Value": ["SCT"] },
+                        "00080104": { "vr": "LO", "Value": ["Anatomical Structure"] }
+                    }]
                 },
                 "006A000A": {
                     "vr": "SQ",
-                    "Value": [
-                        {
-                            "00080100": {
-                                "vr": "SH",
-                                "Value": ["98790000"]
-                            },
-                            "00080102": {
-                                "vr": "SH",
-                                "Value": ["SCT"]
-                            },
-                            "00080104": {
-                                "vr": "LO",
-                                "Value": ["Nucleus"]
-                            }
-                        }
-                    ]
+                    "Value": [{
+                        "00080100": { "vr": "SH", "Value": ["98790000"] },
+                        "00080102": { "vr": "SH", "Value": ["SCT"] },
+                        "00080104": { "vr": "LO", "Value": ["Nucleus"] }
+                    }]
+                },
+                "006A000C": { "vr": "UL", "Value": [1] },
+                "006A000D": { "vr": "CS", "Value": ["YES"] },
+                "00700023": { "vr": "CS", "Value": ["ELLIPSE"] }
+            };
+
+            combinedResponses.push(dicomObject);
+        } else {
+            const parsedCoordinates = item.coordinates.map(coord => {
+                const [lat, lon] = coord.replace(/[()]/g, '').split(',').map(parseFloat);
+                return [lat, lon];
+            });
+
+            const encodedCoordinates = getEncodedData(parsedCoordinates);
+
+            let dicomObject = {
+                "0040A180": { "vr": "US", "Value": [1] },
+                "00660016": { "vr": "OF", "InlineBinary": encodedCoordinates },
+                "0066002F": { "vr": "SQ" },
+                "00660030": { "vr": "SQ" },
+                "006A0003": { "vr": "UI", "Value": [generateGroupID()] },
+                "006A0005": { "vr": "LO", "Value": [item.GroupName] },
+                "006A0007": { "vr": "CS", "Value": ["MANUAL"] },
+                "006A0009": {
+                    "vr": "SQ",
+                    "Value": [{
+                        "00080100": { "vr": "SH", "Value": ["2681000"] },
+                        "00080102": { "vr": "SH", "Value": ["SCT"] },
+                        "00080104": { "vr": "LO", "Value": ["Anatomical Structure"] }
+                    }]
+                },
+                "006A000A": {
+                    "vr": "SQ",
+                    "Value": [{
+                        "00080100": { "vr": "SH", "Value": ["98790000"] },
+                        "00080102": { "vr": "SH", "Value": ["SCT"] },
+                        "00080104": { "vr": "LO", "Value": ["Nucleus"] }
+                    }]
                 },
                 "006A000C": { "vr": "UL", "Value": [1] },
                 "006A000D": { "vr": "CS", "Value": ["YES"] },
                 "00700023": { "vr": "CS", "Value": [item.type] }
             };
 
-            // Add DICOM object to responses
             combinedResponses.push(dicomObject);
         }
     });
 
-    // Handle POLYLINE separately, combining all POLYLINE coordinates into a single DICOM object
     if (polylineCoordinates.length > 0) {
         const encodedCoordinates = getEncodedData(polylineCoordinates);
         const encodedIndex = getEncodedIndex(polylineIndexDict);
-
-        let polylineDicomObject = {
-            "0040A180": {
-                "vr": "US",
-                "Value": [1]
-            },
-            "00660016": {
-                "vr": "OF",
-                "InlineBinary": encodedCoordinates
-            },
+        combinedResponses.push({
+            "0040A180": { "vr": "US", "Value": [1] },
+            "00660016": { "vr": "OF", "InlineBinary": encodedCoordinates },
             "0066002F": { "vr": "SQ" },
             "00660030": { "vr": "SQ" },
-            "006A0003": {
-                "vr": "UI",
-                "Value": [generateGroupID()]
-            },
+            "006A0003": { "vr": "UI", "Value": [generateGroupID()] },
             "006A0005": { "vr": "LO", "Value": ["Combined Polyline Group"] },
             "006A0007": { "vr": "CS", "Value": ["MANUAL"] },
             "006A0009": {
                 "vr": "SQ",
-                "Value": [
-                    {
-                        "00080100": {
-                            "vr": "SH",
-                            "Value": ["2681000"]
-                        },
-                        "00080102": {
-                            "vr": "SH",
-                            "Value": ["SCT"]
-                        },
-                        "00080104": {
-                            "vr": "LO",
-                            "Value": ["Anatomical Structure"]
-                        }
-                    }
-                ]
+                "Value": [{
+                    "00080100": { "vr": "SH", "Value": ["2681000"] },
+                    "00080102": { "vr": "SH", "Value": ["SCT"] },
+                    "00080104": { "vr": "LO", "Value": ["Anatomical Structure"] }
+                }]
             },
             "006A000A": {
                 "vr": "SQ",
-                "Value": [
-                    {
-                        "00080100": {
-                            "vr": "SH",
-                            "Value": ["98790000"]
-                        },
-                        "00080102": {
-                            "vr": "SH",
-                            "Value": ["SCT"]
-                        },
-                        "00080104": {
-                            "vr": "LO",
-                            "Value": ["Nucleus"]
-                        }
-                    }
-                ]
+                "Value": [{
+                    "00080100": { "vr": "SH", "Value": ["98790000"] },
+                    "00080102": { "vr": "SH", "Value": ["SCT"] },
+                    "00080104": { "vr": "LO", "Value": ["Nucleus"] }
+                }]
             },
             "006A000C": { "vr": "UL", "Value": [1] },
             "006A000D": { "vr": "CS", "Value": ["YES"] },
             "00700023": { "vr": "CS", "Value": ["POLYLINE"] },
-            "00660040": {
-                "vr": "OL",
-                "InlineBinary": encodedIndex
-            }
-        };
-
-        combinedResponses.push(polylineDicomObject);
+            "00660040": { "vr": "OL", "InlineBinary": encodedIndex }
+        });
     }
 
-    // Handle POLYGON separately, combining all POLYGON coordinates into a single DICOM object
     if (polygonCoordinates.length > 0) {
         const encodedCoordinates = getEncodedData(polygonCoordinates);
         const encodedIndex = getEncodedIndex(polygonIndexDict);
-
-        let polygonDicomObject = {
-            "0040A180": {
-                "vr": "US",
-                "Value": [1]
-            },
-            "00660016": {
-                "vr": "OF",
-                "InlineBinary": encodedCoordinates
-            },
+        combinedResponses.push({
+            "0040A180": { "vr": "US", "Value": [1] },
+            "00660016": { "vr": "OF", "InlineBinary": encodedCoordinates },
             "0066002F": { "vr": "SQ" },
             "00660030": { "vr": "SQ" },
-            "006A0003": {
-                "vr": "UI",
-                "Value": [generateGroupID()]
-            },
+            "006A0003": { "vr": "UI", "Value": [generateGroupID()] },
             "006A0005": { "vr": "LO", "Value": ["Combined Polygon Group"] },
             "006A0007": { "vr": "CS", "Value": ["MANUAL"] },
             "006A0009": {
                 "vr": "SQ",
-                "Value": [
-                    {
-                        "00080100": {
-                            "vr": "SH",
-                            "Value": ["2681000"]
-                        },
-                        "00080102": {
-                            "vr": "SH",
-                            "Value": ["SCT"]
-                        },
-                        "00080104": {
-                            "vr": "LO",
-                            "Value": ["Anatomical Structure"]
-                        }
-                    }
-                ]
+                "Value": [{
+                    "00080100": { "vr": "SH", "Value": ["2681000"] },
+                    "00080102": { "vr": "SH", "Value": ["SCT"] },
+                    "00080104": { "vr": "LO", "Value": ["Anatomical Structure"] }
+                }]
             },
             "006A000A": {
                 "vr": "SQ",
-                "Value": [
-                    {
-                        "00080100": {
-                            "vr": "SH",
-                            "Value": ["98790000"]
-                        },
-                        "00080102": {
-                            "vr": "SH",
-                            "Value": ["SCT"]
-                        },
-                        "00080104": {
-                            "vr": "LO",
-                            "Value": ["Nucleus"]
-                        }
-                    }
-                ]
+                "Value": [{
+                    "00080100": { "vr": "SH", "Value": ["98790000"] },
+                    "00080102": { "vr": "SH", "Value": ["SCT"] },
+                    "00080104": { "vr": "LO", "Value": ["Nucleus"] }
+                }]
             },
             "006A000C": { "vr": "UL", "Value": [1] },
             "006A000D": { "vr": "CS", "Value": ["YES"] },
             "00700023": { "vr": "CS", "Value": ["POLYGON"] },
-            "00660040": {
-                "vr": "OL",
-                "InlineBinary": encodedIndex
-            }
-        };
-
-        combinedResponses.push(polygonDicomObject);
+            "00660040": { "vr": "OL", "InlineBinary": encodedIndex }
+        });
     }
 
     return combinedResponses;
@@ -596,7 +539,7 @@ router.post('/SaveAnnData/studies/:studies/series/:series', async (req, res) => 
             "00080050":  {
                 "vr": "SH",
                 "Value": [
-                    "FIVE"
+                    "ELLIPSE"
                 ]
             },
 
