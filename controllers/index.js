@@ -21,20 +21,30 @@ async function fetchMetadata(studiesID, seriesID,token,serverUrl) {
             },
         });
 
-        const instanceUIDs = response.data.map(instance => instance["00080018"].Value[0]);
+        const validInstanceUIDs = response.data
+            .filter(instance =>
+                instance["00080060"] &&
+                instance["00080060"].Value &&
+                !instance["00080060"].Value.includes("ANN")
+            )
+            .map(instance => instance["00080018"].Value[0]);
 
-        const metadataPromises = instanceUIDs.map(async instanceUID => {
+        if (validInstanceUIDs.length === 0) {
+            console.error("No non-ANN instances found.");
+            return null;
+        }
+
+        const metadataPromises = validInstanceUIDs.map(async instanceUID => {
             const url = `${serverUrl}/studies/${studiesID}/series/${seriesID}/instances/${instanceUID}/metadata`;
-            //console.log('URL:', url);
             const metadataResponse = await axios.get(url, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
-            });            return metadataResponse.data;
+            });
+            return metadataResponse.data;
         });
 
         const allMetadata = (await Promise.all(metadataPromises)).flat();
-        //console.log('allMetadata:', allMetadata);
 
         const invalidInstanceWithNone = allMetadata.find(metadata => metadata["00080008"] && metadata["00080008"].Value && metadata["00080008"].Value.includes("NONE"));
         const invalidInstanceWithVolume = allMetadata.find(metadata => metadata["00080008"] && metadata["00080008"].Value && metadata["00080008"].Value.includes("VOLUME"));
