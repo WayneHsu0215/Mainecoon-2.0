@@ -12,7 +12,7 @@ axios.defaults.headers.common['Authorization'] = `Bearer ${oauthToken}`;
 
 const defaultHeaders = {
     'Content-Type': 'application/json',
-    'Authorization': `Bearer ${oauthToken}`
+    ...(oauthToken && { 'Authorization': `Bearer ${oauthToken}` }),
 };
 const originalFetch = window.fetch;
 
