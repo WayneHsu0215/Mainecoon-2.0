@@ -1,114 +1,59 @@
-import Cookies from 'js-cookie';
-
+﻿import Cookies from 'js-cookie';
+import config from './config/oauthConfig.js';
 
 export async function getAccessToken() {
-    // 检查 Cookie 中是否已有访问令牌
-    let oauthToken = Cookies.get('access_token');
+    // Check before reading cookies or contacting Keycloak.
+    if (!config.enabled) return undefined;
 
-    const configResponse = await fetch('/oauthConfig.json');
-    if (!configResponse.ok) {
-        throw new Error('Failed to load config.json');
-    }
-    const config = await configResponse.json();
-    const { enabled, keycloak_url, client_id, client_secret, redirect_uri } = config;
+    const { keycloak_url, client_id, client_secret, redirect_uri } = config;
+    const endpoint = `${keycloak_url.replace(/\/$/, '')}/protocol/openid-connect`;
+    const client = { client_id, ...(client_secret ? { client_secret } : {}) };
+    const post = async (url, params) => {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams(params).toString(),
+        });
+        if (!response.ok) throw new Error('Keycloak request failed');
+        return response.json();
+    };
 
-    console.log('5555555',redirect_uri)
-
+    const oauthToken = Cookies.get('access_token');
     if (oauthToken) {
-        // 检查令牌是否过期
-        const introspectUrl = 'https://keycloak.dicom.tw/realms/wsi-demo/protocol/openid-connect/token/introspect';
-        // const configResponse = await fetch('/oauthConfig.json');
-        // if (!configResponse.ok) {
-        //     throw new Error('Failed to load config.json');
-        // }
-        // const config = await configResponse.json();
-        const { client_id, client_secret } = config;
-
-        const introspectParams = new URLSearchParams({
-            'token': oauthToken,
-            'client_id': client_id,
-            'client_secret': client_secret
-        }).toString();
-
-        try {
-            const introspectResponse = await fetch(introspectUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: introspectParams,
-            });
-
-            if (!introspectResponse.ok) {
-                throw new Error('Failed to introspect token');
-            }
-
-            const introspectData = await introspectResponse.json();
-            if (introspectData.active) {
-                return oauthToken;
-            } else {
-                // 如果令牌已过期，删除现有令牌
-                Cookies.remove('access_token');
-            }
-        } catch (error) {
-            console.error('Failed to introspect access token', error);
-            throw error;
-        }
+        const data = await post(`${endpoint}/token/introspect`, { ...client, token: oauthToken });
+        if (data.active) return oauthToken;
+        Cookies.remove('access_token');
     }
 
-    if (enabled) {
-        // 从 URL 哈希部分解析授权码
-        const hash = window.location.hash.substring(1); // 移除开头的 '#'
-        const hashParams = new URLSearchParams(hash);
-        const authorizationCode = hashParams.get('code');
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const queryParams = new URLSearchParams(window.location.search);
+    const authorizationCode = hashParams.get('code') || queryParams.get('code');
+    const error = hashParams.get('error') || queryParams.get('error');
+    if (error) throw new Error(`Keycloak authorization failed: ${error}`);
 
-        if (authorizationCode) {
-            // 使用 authorization_code 流程去获取访问令牌
-            const tokenUrl = keycloak_url.replace('/auth', '/token');
-            const params = new URLSearchParams({
-                'grant_type': 'authorization_code',
-                'client_id': client_id,
-                'client_secret': client_secret,
-                'code': authorizationCode,
-                'redirect_uri': redirect_uri,
-            }).toString();
-
-            try {
-                const response = await fetch(tokenUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: params,
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to obtain access token');
-                }
-
-                const data = await response.json();
-                Cookies.set('access_token', data.access_token); // 设置令牌的过期时间为 1 天
-
-                // 移除 URL 中的 `code` 参数以防止重复使用
-                window.history.replaceState({}, document.title, window.location.pathname);
-
-                return data.access_token;
-            } catch (error) {
-                console.error('Failed to obtain access token using authorization code', error);
-                throw error;
-            }
-        } else {
-            // 如果没有 `code`，则重定向到 Keycloak 登录页面
-            const clientId = 'wsi-demo';
-            const redirectUri = encodeURIComponent(redirect_uri);
-            // const redirectUri = encodeURIComponent('http://localhost:3000');
-            // const keycloakUrl = `https://keycloak.dicom.tw/realms/raccoon/protocol/openid-connect/auth?client_id=${clientId}&redirect_uri=${redirect_uri}&response_mode=fragment&response_type=code&scope=openid`;
-            const keycloakUrl = `https://keycloak.dicom.tw/realms/wsi-demo/protocol/openid-connect/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_mode=fragment&response_type=code&scope=openid`;
-
-            window.location.href = keycloakUrl;
+    if (authorizationCode) {
+        const data = await post(`${endpoint}/token`, {
+            ...client,
+            grant_type: 'authorization_code',
+            code: authorizationCode,
+            redirect_uri,
+        });
+        if (!data.access_token) throw new Error('Keycloak returned no access token');
+        Cookies.set('access_token', data.access_token);
+        for (const key of ['code', 'state', 'session_state', 'iss']) {
+            queryParams.delete(key);
+            hashParams.delete(key);
         }
-    } else {
-        return;
+        const query = queryParams.toString();
+        const hash = hashParams.toString();
+        window.history.replaceState({}, document.title,
+            `${window.location.pathname}${query ? `?${query}` : ''}${hash ? `#${hash}` : ''}`);
+        return data.access_token;
     }
+
+    const params = new URLSearchParams({
+        client_id, redirect_uri, response_mode: 'fragment', response_type: 'code', scope: 'openid',
+    });
+    window.location.href = `${endpoint}/auth?${params}`;
+    return undefined;
 }
-

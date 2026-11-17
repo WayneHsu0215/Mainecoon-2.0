@@ -9,6 +9,7 @@ import {AnnotationsProvider} from "./lib/AnnotaionsContext.jsx";
 import {ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import {ImageProvider} from "./lib/ImageContext.jsx";
+import UploadPage from './routes/upload/UploadPage.jsx';
 
 
 const Main = () => {
@@ -16,6 +17,7 @@ const Main = () => {
         <Router>
             <ToastContainer/>
             <Routes>
+                <Route path="/upload" element={<UploadPage/>}/>
                 <Route path="/" element={<Navigate to="/search"/>}/>
                 <Route path="/viewer" element={<ViewerPage/>}/>
                 <Route path="/search" element={<Search/>}/>

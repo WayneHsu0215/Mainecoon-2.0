@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import {Router} from "express";
+import oauthConfig from "../src/config/oauthConfig.js";
 import dicomWebServerConfig from "../src/config/DICOMWebServer.config.js";
 
 
@@ -17,7 +18,7 @@ async function fetchMetadata(studiesID, seriesID,token,serverUrl) {
     try {
         const response = await axios.get(Studiesurl, {
             headers: {
-                Authorization: `Bearer ${token}`,
+                ...(oauthConfig.enabled && token ? { Authorization: `Bearer ${token}` } : {}),
             },
         });
 
@@ -38,7 +39,7 @@ async function fetchMetadata(studiesID, seriesID,token,serverUrl) {
             const url = `${serverUrl}/studies/${studiesID}/series/${seriesID}/instances/${instanceUID}/metadata`;
             const metadataResponse = await axios.get(url, {
                 headers: {
-                    Authorization: `Bearer ${token}`,
+                    ...(oauthConfig.enabled && token ? { Authorization: `Bearer ${token}` } : {}),
                 },
             });
             return metadataResponse.data;
@@ -406,11 +407,11 @@ async function uploadDicomFile(dicomFilePath,token,serverUrl) {
     try {
         const formData = new FormData();
         formData.append('Flies', fs.createReadStream(dicomFilePath));
-        console.log("token",token)
+
 
         const response = await axios.post(`${serverUrl}/studies`, formData, {
             headers: {
-                Authorization: `Bearer ${token}`,
+                ...(oauthConfig.enabled && token ? { Authorization: `Bearer ${token}` } : {}),
                 ...formData.getHeaders(),
             },
         });

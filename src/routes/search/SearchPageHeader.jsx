@@ -177,6 +177,7 @@ const SearchPageHeader = ({setSearchResults, pageLimit, pageOffset, setHandleNex
                     </div>
 
                     <div className="flex flex-row justify-center items-center ">
+                        <Link to="/upload" className="bg-white text-green-800 hover:bg-green-50 rounded-lg px-3 py-2 whitespace-nowrap">Upload images</Link>
                         <Server/>
                     </div>
                 </div>

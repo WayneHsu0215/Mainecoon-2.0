@@ -267,7 +267,7 @@ const computePyramid = (images, baseUrl, studyUid, seriesUid, Resolutions, TileS
 
                 fetch(src, {
                     headers: {
-                        'Authorization': `Bearer ${oauthToken}`
+                        ...(oauthToken ? { Authorization: `Bearer ${oauthToken}` } : {})
                     }
                 })
                 .then(response => {

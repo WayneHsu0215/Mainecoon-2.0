@@ -7,7 +7,11 @@ const oauthToken = await getAccessToken();
 
 // 设置 Axios 的默认 headers
 axios.defaults.headers.common['Content-Type'] = 'application/json';
-axios.defaults.headers.common['Authorization'] = `Bearer ${oauthToken}`;
+if (oauthToken) {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${oauthToken}`;
+} else {
+    delete axios.defaults.headers.common['Authorization'];
+}
 
 
 const defaultHeaders = {

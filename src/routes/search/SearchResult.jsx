@@ -14,7 +14,7 @@ function Thumbnail({seriesUid, studyUid, server}) {
                 const oauthToken = await getAccessToken();
                 const res = await fetch(`${combineUrl(server)}/studies/${studyUid}/series/${seriesUid}/thumbnail`, {
                     method: 'GET', headers: {
-                        Accept: 'image/jpeg', Authorization: `Bearer ${oauthToken}`,
+                        Accept: 'image/jpeg', ...(oauthToken ? { Authorization: `Bearer ${oauthToken}` } : {}),
                     },
                 });
 

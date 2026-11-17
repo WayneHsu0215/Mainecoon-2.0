@@ -30,6 +30,12 @@ const MicroscopyViewer = ({baseUrl, studyUid, seriesUid, images, layers,annotati
     const [errorMessage, setErrorMessage] = useState(undefined);
     const [layer, setLayer] = layers;
     const mapRef = useRef(null);
+    const targetRef = useRef(null);
+    useEffect(() => {
+        const observer = new ResizeObserver(() => mapRef.current?.updateSize());
+        if (targetRef.current) observer.observe(targetRef.current);
+        return () => observer.disconnect();
+    }, []);
     const [annotationList, setAnnotationList] = useContext(AnnotationsContext)
 
     const findMaxToalPixelMatrixColumns = (images) => {
@@ -45,11 +51,11 @@ const MicroscopyViewer = ({baseUrl, studyUid, seriesUid, images, layers,annotati
     }
 
     useEffect(() => {
+        let cancelled = false;
         const fetchData = async () => {
             try {
                 const {extent, layer, resolutions, view, PixelSpacings} = computePyramidInfo(baseUrl, studyUid, seriesUid, images);
-                const viewerElement = document.getElementById("ViewerID");
-                viewerElement.innerHTML = '';
+                const viewerElement = targetRef.current;
 
                 const controls = [
                     // ...defaultControls().getArray(),
@@ -68,7 +74,7 @@ const MicroscopyViewer = ({baseUrl, studyUid, seriesUid, images, layers,annotati
                     new FullScreen(),
                     // new Rotate(),
                     new ZoomSlider(),
-                    // new ZoomToExtent(),
+                    new ZoomToExtent({extent, tipLabel: "Fit slide to view"}),
                     new Zoom({
                         className: 'zoom-control' // 添加自定义的类名
                     }),
@@ -85,7 +91,7 @@ const MicroscopyViewer = ({baseUrl, studyUid, seriesUid, images, layers,annotati
                     // shift+drag to rotate and zoom
                     interactions: defaultInteractions().extend([new DragRotateAndZoom(),select, translate]),
                     controls,
-                    target: "ViewerID",
+                    target: viewerElement,
                     layers: [layer],
                     view,
                 });
@@ -97,6 +103,7 @@ const MicroscopyViewer = ({baseUrl, studyUid, seriesUid, images, layers,annotati
 
                 Object.keys(annotationList).map(async (key) => {
                     const {features, group, seriesUid, centerCoordinatesArray} = await computeAnnotationFeatures(annotationList[key], resolutions);
+                    if (cancelled) return;
                     const annotationGroup = Object.values(group);
                     features.forEach((feature, index) => {
                         if (feature.length > 0) {
@@ -161,29 +168,21 @@ const MicroscopyViewer = ({baseUrl, studyUid, seriesUid, images, layers,annotati
         };
         // {((images.length > 0)&&(Object.values(annotationList).length !== 0)) && fetchData()}
         {images.length > 0 && fetchData()}
+        return () => {
+            cancelled = true;
+            mapRef.current?.setTarget(undefined);
+            mapRef.current?.dispose();
+            mapRef.current = null;
+        };
     }, [baseUrl, studyUid, seriesUid, images,annotations]);
 
     useEffect(() => {updateAnnotation(mapRef, NewSeriesInfo, layers, setAnnotationList,DrawColor)}, [status])
 
     return (
-        <div id="ViewerID" className={`relative w-full flex grow bg-gray-100 `}>
-            {/*{loading ? (*/}
-            {/*    <div className="w-full h-full flex items-center justify-center">*/}
-            {/*        <div className="w-10 h-10 border-4 border-t-primary border-b-green-400 rounded-full animate-spin"/>*/}
-            {/*    </div>*/}
-            {/*) : (*/}
-                <>
-                    <div className="max-h-full h-100 w-full"/>
-                    <div
-                        className={`absolute inset-0 z-10 flex items-center justify-center bg-black/40 ${!errorMessage ? 'hidden' : ''}`}>
-                        <p>{errorMessage}</p>
-                    </div>
-                </>
-            {/*)}*/}
+        <div className="viewer-map-container">
+            <div id="ViewerID" ref={targetRef} className="viewer-map"/>
+            {errorMessage && <div className="viewer-map-error" role="alert">{errorMessage}</div>}
         </div>
-
     );
 };
-
-
 export default MicroscopyViewer;

@@ -19,15 +19,15 @@ export default {
     // },
     DITTO:{
         QIDO: {
-            enableHTTPS: false,
-            hostname: "ditto.dicom.tw",
+            enableHTTPS: true,
+            hostname: "raccoon.dicom.org.tw",
             port: "",
             pathname: "/dicom-web",
             Token: null
         },
         WADO: {
-            enableHTTPS: false,
-            hostname: "ditto.dicom.tw",
+            enableHTTPS: true,
+            hostname: "raccoon.dicom.org.tw",
             port: "",
             URI_pathname: "/dicom-web/wado",
             RS_pathname: "/dicom-web",
@@ -35,24 +35,24 @@ export default {
             Token: null
         }
     },
-    // NewRaccoon: {
-    //     QIDO: {
-    //         enableHTTPS: true,
-    //         hostname: "ditto-tmp.dicom.tw",
-    //         port: "",
-    //         pathname: "/dicom-web",
-    //         Token: null
-    //     },
-    //     WADO: {
-    //         enableHTTPS: true,
-    //         hostname: "ditto-tmp.dicom.tw",
-    //         port: "",
-    //         URI_pathname: "/dicom-web/wado",
-    //         RS_pathname: "/dicom-web",
-    //         Mode: "rs",
-    //         Token: null
-    //     }
-    // },
+    NewRaccoon: {
+        QIDO: {
+            enableHTTPS: true,
+            hostname: "ditto-tmp.dicom.tw",
+            port: "",
+            pathname: "/dicom-web",
+            Token: null
+        },
+        WADO: {
+            enableHTTPS: true,
+            hostname: "ditto-tmp.dicom.tw",
+            port: "",
+            URI_pathname: "/dicom-web/wado",
+            RS_pathname: "/dicom-web",
+            Mode: "rs",
+            Token: null
+        }
+    }
     // PACS_MITW: {
     //     QIDO: {
     //         enableHTTPS: true,

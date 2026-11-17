@@ -1,19 +1,21 @@
 import './pacman-loader.css';
-import {useContext, useRef, useState} from "react";
+import {useContext, useState} from "react";
 import mainecoon from "../../../assests/mainecoon.png"
 import {Link} from 'react-router-dom';
-import {Icon} from "@iconify/react";
-import Modal from "./ToolsModal.jsx";
-import PatientDetails from "./PatientDetails.jsx";
-import {useOutsideClick} from "../../search/SearchPageHeader.jsx";
+
+
+
+
 import GeometryPicker from "./GeometryPicker.jsx";
 import {AnnotationsContext} from "../../../lib/AnnotaionsContext.jsx";
 import Cookies from 'js-cookie';
+import oauthConfig from '../../../config/oauthConfig.js';
 import {toast} from "react-toastify";
 import {ServerContext} from "../../../lib/ServerContext.jsx";
 import {combineUrl} from "../../../lib/search/index.js";
 
 const ViewerPageHeader = ({
+                              drawType,
                               DrawColor,
                               save,
                               onMessageChange,
@@ -23,15 +25,11 @@ const ViewerPageHeader = ({
                               handleInfoOpen
                           }) => {
     const [saveAnnotations, setSaveAnnotations] = save;
-    const [isMouseOn, setIsMouseOn] = useState(false);
-    const [isMouseOnPatient, setIsMouseOnPatient] = useState(false);
-    const [isMouseOnCase, setIsMouseOnCase] = useState(false);
-    const [drawColor, setDrawColor] = DrawColor;
+    const [, setDrawColor] = DrawColor;
     const [annotationList] = useContext(AnnotationsContext)
-    const [okToSave, setOkToSave] = useState(false);
     const [loading, setLoading] = useState(false);
-    const accessToken = Cookies.get('access_token');
-    const [server, setServer] = useContext(ServerContext)
+
+    const [server] = useContext(ServerContext)
 
     const getServerUrl = (server) => {
         const url = combineUrl(server);
@@ -112,11 +110,10 @@ const ViewerPageHeader = ({
                     if (data.length > 0) {
                         saveDataJson = JSON.stringify({
                             server: getServerUrl(server),
-                            token: accessToken,
+                            token: oauthConfig.enabled ? Cookies.get('access_token') : undefined,
                             totalPixelMatrixColumns,
                             data
                         });
-                        console.log('saveDataJson', saveDataJson);
                         save = true;
                     }
                 }
@@ -124,14 +121,11 @@ const ViewerPageHeader = ({
         });
 
         if (!save) {
-            setOkToSave(false);
-            toast.error('Please finish editing before saving');
+                toast.error('Please finish editing before saving');
             return;
         }
 
-        setOkToSave(true);
         setLoading(true);
-        setIsMouseOn(false);
 
         fetch(`/api/SaveAnnData/studies/${studyUid}/series/${seriesUid}`, {
             method: 'POST',
@@ -157,29 +151,6 @@ const ViewerPageHeader = ({
             });
     };
 
-    const mouseOnFun = () => {
-        setIsMouseOn(!isMouseOn);
-    };
-
-    const mouseOutPatientFun = () => {
-        setIsMouseOnPatient(false);
-    };
-    const mouseOutCaseFun = () => {
-        setIsMouseOnCase(false);
-    };
-
-    const myRef = useRef(null);
-    const myPatientDetailsRef = useRef(null);
-    const myCaseDetailsRef = useRef(null);
-    // useOutsideClick(myRef, () => {mouseOutFun()});
-    useOutsideClick(myPatientDetailsRef, () => {
-        mouseOutPatientFun()
-    });
-    useOutsideClick(myCaseDetailsRef, () => {
-        mouseOutCaseFun()
-    });
-
-
     const handleDraw = (name, type) => {
         onMessageChange({name: name, type: type});
     }
@@ -193,95 +164,25 @@ const ViewerPageHeader = ({
         setDrawColor(rgbaColor);
     }
 
-    const [showDrawerButtonName, setShowDrawerButtonName] = useState(false);
-    const [showSaveButtonName, setShowSaveButtonName] = useState(false);
 
     return (
         <>
-            {loading && <div
-                className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-50 flex justify-center items-center">
-                <div className="bg-white p-5 rounded-lg">
-                    <div className="loader mx-auto mb-2"></div>
-                    <span className="text-2xl font-bold">Saving Annotations...</span>
+            <header className="viewer-header">
+                <Link to="/search" className="viewer-brand"><img src={mainecoon} alt=""/><span>MAINECOON<small>Pathology viewer</small></span></Link>
+                <div className="viewer-header-actions">
+                    <Link to="/upload" className="viewer-button">Upload images</Link>
+                    <Link to="/search" className="viewer-button">Back to search</Link>
+                    <button onClick={handleInfoOpen}>Patient info</button>
+                    <button className="viewer-save" disabled={loading || imageLoading || !seriesUid} onClick={() => handleSaveAnnotations(studyUid, seriesUid)}>{loading ? 'Saving…' : 'Save annotations'}</button>
                 </div>
+            </header>
+            <div className="viewer-tools" role="toolbar" aria-label="Annotation tools">
+                <button aria-pressed={!drawType[0]} onClick={() => handleDraw('cancel', '')}>Pan</button>
+                <GeometryPicker className="viewer-geometries" activeType={drawType[0]} disabled={imageLoading || !seriesUid} onPick={(type) => handleDraw('drawtype', type)}/>
+                <label className="viewer-color">Color<input type="color" aria-label="Annotation color" defaultValue="#ff0000" onChange={handleDrawColor}/></label>
             </div>
-            }
-
-            <div className="bg-green-500 text-white p-1 h-fit">
-                <div className="flex flex-row ">
-                    <div className="flex">
-                        <Link to="/" className={"w-14 h-14 flex flex-column items-center ml-1"}>
-                            <img src={mainecoon} alt="maincoon"/>
-                        </Link>
-                        <div className="flex items-center">
-                            <h1 className="text-2xl ml-2 mr-5 font-bold font-serif tracking-wider">MAINECOON</h1>
-                            <Link to="/search"
-                                className="flex bg-white hover:bg-teal-500 rounded-lg px-2 py-2 ml-3 mt-1 mb-1 text-black
-                            hover:text-white items-center transition-colors duration-200 ease-in-out"
-                                onClick={handleInfoOpen}>
-                                <Icon icon="icon-park-solid:back" width="20" height="20" />
-                                <span className="sm:inline hidden ml-1 items-center">Back</span>
-                            </Link>
-                        </div>
-
-                    </div>
-                    <div className="flex justify-end items-center w-full">
-                        <div className="mr-2">
-                            <button
-                                className="flex bg-white hover:bg-teal-500 rounded-lg p-2 mr-1 mb-1 text-black
-                                hover:text-white items-center transition-colors duration-200 ease-in-out"
-                                onClick={handleInfoOpen}>
-                                <Icon icon="fluent:document-data-16-filled" width="20" height="20"/>
-                                <span className="sm:inline hidden ml-1 items-center">INFO</span>
-                            </button>
-                        </div>
-                        <div ref={myRef}
-                             onClick={mouseOnFun}
-                             className={`mr-2 ${imageLoading ? 'pointer-events-none opacity-50' : ''}`}
-                             onMouseOver={() => setShowDrawerButtonName(true)}
-                             onMouseLeave={() => setShowDrawerButtonName(false)}
-                        >
-                            <button className="flex bg-white hover:bg-teal-500 rounded-lg p-2 mr-1 mb-1 block text-black
-                 hover:text-white items-center transition-colors duration-200 ease-in-out"
-                            >
-                                <Icon icon="mdi:tag-edit" className="h-5 w-5"/>
-                                {showDrawerButtonName &&
-                                    <span className="sm:inline hidden ml-1 items-center">DRAWER</span>}
-                            </button>
-                        </div>
-
-                        <div className="flex flex-row gap-2">
-                            <button className="flex bg-white hover:bg-teal-500  rounded-lg p-2 mr-6 mb-1 text-black
-                            hover:text-white items-center transition-colors duration-200 ease-in-out"
-                                    onClick={() => handleSaveAnnotations(studyUid, seriesUid)}
-                                    onMouseOver={() => setShowSaveButtonName(true)}
-                                    onMouseLeave={() => setShowSaveButtonName(false)}
-                            >
-                                <Icon icon="ant-design:save-outlined" className="h-5 w-5"/>
-                                {showSaveButtonName &&
-                                    <span className="sm:inline hidden ml-1 items-center">Save</span>
-                                }
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <Modal isOpen={isMouseOn}>
-                <div className="m-2 mt-3 flex">
-                    <GeometryPicker className="flex"
-                                    buttonClassName={"bg-white mr-2 hover:bg-green-400 hover:text-white"}
-                                    onPick={(type) => handleDraw('drawtype', type)}/>
-                    <button
-                        type="button"
-                        className=" flex rounded p-2 bg-white mr-2 hover:bg-green-400 hover:text-white"
-                        onClick={() => handleDraw('cancel', '')}
-                    >
-                        <Icon icon="fa6-regular:hand" className="mr-2 h-4 w-4 mt-0.5"/>
-                        <span className="text-sm">Cancel</span>
-                    </button>
-                </div>
-            </Modal>
-        </>)
+            {loading && <div className="viewer-saving" role="status" aria-live="polite">Saving annotations…</div>}
+        </>
+    );
 };
-
 export default ViewerPageHeader;

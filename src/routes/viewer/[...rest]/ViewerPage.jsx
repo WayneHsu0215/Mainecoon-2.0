@@ -3,7 +3,7 @@ import MicroscopyViewer from './MicroscopyViewer';
 import {combineUrl, fetchPatientDetails, generateSeriesUID} from "../../../lib/search/index.js";
 import {Icon} from "@iconify/react";
 import ViewerPageHeader from "./ViewerHeader.jsx";
-import {Report} from "../../report/Report.jsx";
+import "./viewer.css";
 import {getAnnotations, getImagingInfo, getSeriesInfo} from '../../../lib/dicom-webs/series';
 import {DICOMWEB_URLS} from '../../../lib/dicom-webs';
 import {getSlideLabel} from "../../../lib/image/index.js";
@@ -28,8 +28,7 @@ const ViewerPage = () => {
     const [images, setImages] = useState([])
     const [annotations, setAnnotations] = useState({})
     const [isLeftOpen, setIsLeftOpen] = useState(false)
-    const [isReportOpen, setIsReportOpen] = useState(false)
-    const [isRightOpen, setIsRightOpen] = useState(true)
+    const [isRightOpen, setIsRightOpen] = useState(() => window.innerWidth >= 1100)
     const [labelOpen, setLabelOpen] = useState([1, 1, 1, 1, 1, 1])
     const [drawType, setDrawType] = useState(null)
     const [save, setSave] = useState(false)
@@ -53,13 +52,12 @@ const ViewerPage = () => {
     const [isInfoOpen, setIsInfoOpen] = useState(true)
 
     const RightDrawerOpen = () => {
-        setIsRightOpen(!isRightOpen)
+        setFocused(false);
+        setIsRightOpen(!isRightOpen);
+        if (window.innerWidth < 1100) setIsSlidesOpen(false)
     }
 
 
-    const ReportOpen = () => {
-        setIsReportOpen(!isReportOpen)
-    }
 
     const handleLabelOpen = (e, value) => {
         e.preventDefault();
@@ -359,82 +357,36 @@ const ViewerPage = () => {
     };
 
     const handleInfoOpen = () => {
-        setIsInfoOpen(!isInfoOpen)
+        setFocused(false);
+        setIsRightOpen(true);
+        setIsInfoOpen(value => !value);
+        if (window.innerWidth < 1100) setIsSlidesOpen(false)
     }
 
-    const [isSlidesOpen, setIsSlidesOpen] = useState(true);
+    const [isSlidesOpen, setIsSlidesOpen] = useState(() => window.innerWidth >= 1400);
+    const [focused, setFocused] = useState(false);
     const handleSlideDrawerOpen = () => {
-        setIsSlidesOpen(!isSlidesOpen)
+        setFocused(false);
+        setIsSlidesOpen(!isSlidesOpen);
+        if (window.innerWidth < 1100) setIsRightOpen(false)
     }
 
     return (
-        <>
-            <div className="flex h-full w-auto flex-col bg-white bg-opacity-25">
-                <ViewerPageHeader drawType={[drawType, setDrawType]}
-                                  save={[save, setSave]}
-                                  isLeftOpen={[isLeftOpen, setIsLeftOpen]}
-                                  isReportOpen={[isReportOpen, setIsReportOpen]}
-                                  detail={patientDetails}
-                                  onMessageChange={getDrawType}
-                                  DrawColor={[drawColor, setDrawColor]}
-                                  studyUid={studyUid}
-                                  seriesUid={seriesUID}
-                                  imageLoading={loading}
-                                  handleInfoOpen={handleInfoOpen}
-                />
-                <div className={`custom-height w-full flex grow relative`}>
-                    {isSlidesOpen ? (
-                        <ImageList isSlidesOpen={isSlidesOpen} handleSlideDrawerOpen={handleSlideDrawerOpen}/>
-                    ) : (
-                        !isReportOpen && (
-                            <div className="flex z-30">
-                                <div className="absolute z-30">
-                                    <button
-                                        className="flex items-center justify-center bg-green-500 text-white font-semibold rounded-lg py-2 px-3 m-2 border-2 border-green-600 shadow-md transition-all duration-300 hover:bg-green-600
-                                        hover:shadow-lg hover:scale-105 active:bg-green-700 active:scale-95 focus:outline-none focus:ring-2 focus:ring-green-300"
-                                        onClick={handleSlideDrawerOpen}
-                                    >
-                                        <span>Slides</span>
-                                    </button>
-
-                                    <button
-                                        className="flex items-center justify-center bg-green-500 text-white font-semibold rounded-lg py-2 px-3 m-2 border-2 border-green-600 shadow-md transition-all duration-300 hover:bg-green-600
-                                        hover:shadow-lg hover:scale-105 active:bg-green-700 active:scale-95 focus:outline-none focus:ring-2 focus:ring-green-300"
-                                        onClick={ReportOpen}>
-                                        <span>Report</span>
-                                    </button>
-                                </div>
-                            </div>)
-                    )}
-                    {isReportOpen ? (
-                        <>
-                            <Report ReportOpen={ReportOpen}/>
-                            {!isSlidesOpen && (
-                                <div className="flex justify-start  z-30 mt-2 ">
-                                    <div className="absolute z-30">
-                                        <button
-                                            className="flex items-center justify-center bg-green-500 text-white font-semibold rounded-lg py-2 px-3 m-2 border-2 border-green-600 shadow-md transition-all duration-300 hover:bg-green-600
-                                        hover:shadow-lg hover:scale-105 active:bg-green-700 active:scale-95 focus:outline-none focus:ring-2 focus:ring-green-300"
-                                            onClick={handleSlideDrawerOpen}>
-                                            <span>Slides</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            )}
-                        </>
-                    ) : (
-                        isSlidesOpen ? (
-                            <div className="flex justify-start z-30 mt-2 ">
-                                <div className="absolute z-30">
-                                    <button
-                                        className="flex items-center justify-center bg-green-500 text-white font-semibold rounded-lg py-2 px-3 m-2 border-2 border-green-600 shadow-md transition-all duration-300 hover:bg-green-600
-                                        hover:shadow-lg hover:scale-105 active:bg-green-700 active:scale-95 focus:outline-none focus:ring-2 focus:ring-green-300"
-                                        onClick={ReportOpen}>
-                                        <span>report</span>
-                                    </button>
-                                </div>
-                            </div>) : (<></>)
-                    )}
+        <main className="viewer-shell">
+            <ViewerPageHeader drawType={[drawType, setDrawType]} save={[save, setSave]}
+                detail={patientDetails} onMessageChange={getDrawType} DrawColor={[drawColor, setDrawColor]}
+                studyUid={studyUid} seriesUid={seriesUID} imageLoading={loading} handleInfoOpen={handleInfoOpen}/>
+            <nav className="viewer-workspace-bar" aria-label="Workspace panels">
+                <div className="viewer-panel-actions">
+                    <button aria-pressed={isSlidesOpen && !focused} onClick={handleSlideDrawerOpen}>Slides</button>
+                    <button aria-pressed={isRightOpen && !focused} onClick={RightDrawerOpen}>Details & annotations</button>
+                </div>
+                <span className="viewer-study" title={studyUid || ''}>{studyUid ? 'Study · ' + studyUid : 'No study selected'}</span>
+                <button aria-pressed={focused} onClick={() => setFocused(value => !value)}>{focused ? 'Restore panels' : 'Focus mode'}</button>
+            </nav>
+            <div className="viewer-workspace">
+                {!focused && isSlidesOpen && <aside className="viewer-slides" aria-label="Slides"><ImageList isSlidesOpen={isSlidesOpen} handleSlideDrawerOpen={handleSlideDrawerOpen}/></aside>}
+                <section className="viewer-canvas" aria-label="Slide image">
                     <MicroscopyViewer
                         baseUrl={baseUrl}
                         studyUid={studyUid}
@@ -448,7 +400,10 @@ const ViewerPage = () => {
                         annotations={annotations}
                         onMessageChange={handlePanToMessage}
                     />
-                    {isRightOpen ? (
+
+                    {!studyUid && <div className="viewer-empty"><h2>Select a slide to begin</h2><p>Open Slides or return to search to choose a study.</p></div>}
+                </section>
+                {!focused && isRightOpen && <aside className="viewer-details" aria-label="Details and annotations">
                         <RightDrawer
                             labelOpen={labelOpen}
                             handleLabelOpen={handleLabelOpen}
@@ -465,23 +420,11 @@ const ViewerPage = () => {
                             isInfoOpen={isInfoOpen}
                             handleInfoOpen={handleInfoOpen}
                         />
-                    ) : (
-                        <div className="flex justify-end items-center z-30 mt-2">
-                            <div className="absolute z-30 mt-2">
-                                <button
-                                    className="flex items-center bg-gray-400 hover:bg-gray-600 text-white font-bold rounded-l-lg px-2 py-5"
-                                    onClick={RightDrawerOpen}>
-                                    {'<'}
-                                </button>
-                            </div>
-                        </div>
-                    )}
-                </div>
+
+                </aside>}
             </div>
-
-        </>
+            <footer className="viewer-status"><span>{drawType ? 'Drawing · ' + drawType : 'Pan mode'}</span><span>Scroll to zoom · Drag to pan · Double-click to finish a line or polygon</span></footer>
+        </main>
     );
-}
-
-
+};
 export default ViewerPage;
