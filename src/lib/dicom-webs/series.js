@@ -1,4 +1,5 @@
 import {DicomTags, fetchDicomJson} from '../dicom-webs/index.js';
+import {getFocalPlaneMetadata} from '../microscopy-viewers/focal-planes.js';
 
 /**
  * Information about an annotation within a DICOM study.
@@ -106,6 +107,7 @@ export const getImagingInfo = async (baseUrl, studyUid, seriesUid) => {
                 rows: metadata[DicomTags.Rows]?.Value?.[0],
                 columns: metadata[DicomTags.Columns]?.Value?.[0],
                 pixelSpacing: getPixelSpacing(metadata),
+                ...getFocalPlaneMetadata(metadata),
                 totalPixelMatrixColumns: metadata[DicomTags.TotalPixelMatrixColumns]?.Value?.[0],
                 totalPixelMatrixRows: metadata[DicomTags.TotalPixelMatrixRows]?.Value?.[0],
             };

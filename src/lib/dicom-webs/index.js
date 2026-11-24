@@ -2,6 +2,7 @@ import dicomWebServerConfig from "../../config/DICOMWebServer.config";
 import {combineUrl} from "../../lib/search/index.js";
 import { getAccessToken } from "../../token.js";
 import axios from 'axios';
+import {dicomProxyUrl} from './proxy.js';
 
 const oauthToken = await getAccessToken();
 
@@ -14,19 +15,19 @@ if (oauthToken) {
 }
 
 
-const defaultHeaders = {
-    'Content-Type': 'application/json',
-    // ...(oauthToken && { 'Authorization': `Bearer ${oauthToken}` }),
-};
 const originalFetch = window.fetch;
 
 window.fetch = function(url, options = {}) {
-    options.headers = {
-        ...defaultHeaders,
-        ...options.headers
-    };
-
-    return originalFetch(url, options);
+    const method = (options.method || (url instanceof Request ? url.method : 'GET')).toUpperCase();
+    const input = url instanceof Request ? url.url : String(url);
+    const proxied = method === 'GET' ? dicomProxyUrl(input, dicomWebServerConfig) : input;
+    if (proxied !== input) {
+        const headers = new Headers(url instanceof Request ? url.headers : undefined);
+        new Headers(options.headers).forEach((value, name) => headers.set(name, value));
+        if (oauthToken && !headers.has('Authorization')) headers.set('Authorization', `Bearer ${oauthToken}`);
+        return originalFetch.call(window, proxied, {...options, headers, signal: options.signal || (url instanceof Request ? url.signal : undefined)});
+    }
+    return originalFetch.call(window, url, options);
 };
 
 

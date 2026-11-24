@@ -67,3 +67,5 @@
   .viewer-shell .ol-overviewmap .ol-overviewmap-map { width: 120px; height: 90px; }
 }
 @media (prefers-reduced-motion: reduce) { .viewer-shell * { transition: none !important; animation: none !important; } }
+.viewer-focal-plane { position: absolute; top: 12px; left: 60px; z-index: 5; display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: white; color: #18323e; border: 1px solid #cbd5df; border-radius: 6px; font-size: 13px; }
+.viewer-focal-plane select { padding: 4px; background: white; color: #18323e; }

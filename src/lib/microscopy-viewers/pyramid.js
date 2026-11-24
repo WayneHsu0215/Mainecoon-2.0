@@ -197,7 +197,7 @@ export const computePyramidInfo = (baseUrl, studyUid, seriesUid, images) => {
         const rows = image.rows;
         const totalPixelMatrixColumns = image.totalPixelMatrixColumns;
         const totalPixelMatrixRows = image.totalPixelMatrixRows;
-        const pixelSpacing = getPixelSpacing(image)
+        const pixelSpacing = image.pixelSpacing || getPixelSpacing(image)
         const nColumns = Math.ceil(totalPixelMatrixColumns / columns);
         const nRows = Math.ceil(totalPixelMatrixRows / rows);
 
@@ -211,7 +211,7 @@ export const computePyramidInfo = (baseUrl, studyUid, seriesUid, images) => {
             (totalPixelMatrixRows * (pixelSpacing?.[0] || 1)).toFixed(4),
         ]);
 
-        const zoomFactor = Math.round(baseTotalPixelMatrixColumns / totalPixelMatrixColumns);
+        const zoomFactor = baseTotalPixelMatrixColumns / totalPixelMatrixColumns;
         Resolutions.push(zoomFactor);
 
         Origins.push(offset);
@@ -237,7 +237,7 @@ const computePyramid = (images, baseUrl, studyUid, seriesUid, Resolutions, TileS
 
     const resolutions = images.map(image => ({
         instanceUID: image.instanceUID,
-        resolution: Math.round(baseTotalPixelMatrixColumns / image.totalPixelMatrixColumns),
+        resolution: baseTotalPixelMatrixColumns / image.totalPixelMatrixColumns,
     }));
 
     const projection = new Projection({

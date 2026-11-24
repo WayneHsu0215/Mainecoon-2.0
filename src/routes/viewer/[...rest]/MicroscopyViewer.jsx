@@ -18,6 +18,7 @@ import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import {computeAnnotationFeatures, getRandomColor, lightenColor, updateAnnotation} from '../../../lib/microscopy-viewers/annotation';
 import {computePyramidInfo} from '../../../lib/microscopy-viewers/pyramid';
+import {groupFocalPlanes, defaultFocalPlaneIndex} from '../../../lib/microscopy-viewers/focal-planes.js';
 import {Fill, Stroke, Style} from 'ol/style';
 import {AnnotationsContext} from "../../../lib/AnnotaionsContext.jsx";
 import CircleStyle from "ol/style/Circle.js";
@@ -31,6 +32,21 @@ const MicroscopyViewer = ({baseUrl, studyUid, seriesUid, images, layers,annotati
     const [layer, setLayer] = layers;
     const mapRef = useRef(null);
     const targetRef = useRef(null);
+    const imageLayerRef = useRef(null);
+    const overviewLayerRef = useRef(null);
+    const [focalPlanes, setFocalPlanes] = useState([]);
+    const [focalPlaneIndex, setFocalPlaneIndex] = useState(0);
+
+    const changeFocalPlane = (index) => {
+        if (!mapRef.current || !focalPlanes[index]) return;
+        try {
+            const {layer} = computePyramidInfo(baseUrl, studyUid, seriesUid, focalPlanes[index].images);
+            imageLayerRef.current.setSource(layer.getSource());
+            overviewLayerRef.current.setSource(layer.getSource());
+            setFocalPlaneIndex(index);
+            setErrorMessage(undefined);
+        } catch (error) { setErrorMessage(error.message); }
+    };
     useEffect(() => {
         const observer = new ResizeObserver(() => mapRef.current?.updateSize());
         if (targetRef.current) observer.observe(targetRef.current);
@@ -54,7 +70,14 @@ const MicroscopyViewer = ({baseUrl, studyUid, seriesUid, images, layers,annotati
         let cancelled = false;
         const fetchData = async () => {
             try {
-                const {extent, layer, resolutions, view, PixelSpacings} = computePyramidInfo(baseUrl, studyUid, seriesUid, images);
+                setErrorMessage(undefined);
+                const planes = groupFocalPlanes(images);
+                const index = defaultFocalPlaneIndex(planes);
+                setFocalPlanes(planes);
+                setFocalPlaneIndex(index);
+                const {extent, layer, resolutions, view, PixelSpacings} = computePyramidInfo(baseUrl, studyUid, seriesUid, planes[index].images);
+                imageLayerRef.current = layer;
+                overviewLayerRef.current = new TileLayer({source: layer.getSource()});
                 const viewerElement = targetRef.current;
 
                 const controls = [
@@ -67,7 +90,7 @@ const MicroscopyViewer = ({baseUrl, studyUid, seriesUid, images, layers,annotati
                     new OverviewMap({
                         collapsed: false,
                         // className: 'custom-overview-map',
-                        layers: [new TileLayer({source: layer.getSource()})],
+                        layers: [overviewLayerRef.current],
                     }),
                     ...(PixelSpacings ? [new ScaleLine({units: 'metric', className: 'ol-scale-line'})] : []),
                     new ScaleLine(),
@@ -162,7 +185,7 @@ const MicroscopyViewer = ({baseUrl, studyUid, seriesUid, images, layers,annotati
                     setLayer(tempLayer);
                 });
             } catch (error) {
-                setErrorMessage('Failed to load image.');
+                setErrorMessage(`Failed to load image: ${error.message}`);
                 console.error(error);
             }
         };
@@ -181,6 +204,14 @@ const MicroscopyViewer = ({baseUrl, studyUid, seriesUid, images, layers,annotati
     return (
         <div className="viewer-map-container">
             <div id="ViewerID" ref={targetRef} className="viewer-map"/>
+            {focalPlanes.length > 1 && <label className="viewer-focal-plane">
+                Z plane
+                <select aria-label="Z focal plane" value={focalPlaneIndex} onChange={event => changeFocalPlane(Number(event.target.value))}>
+                    {focalPlanes.map((plane, index) => <option key={plane.key} value={index}>
+                        {index + 1} / {focalPlanes.length}{plane.z === null ? '' : ` · Z ${plane.z}`}
+                    </option>)}
+                </select>
+            </label>}
             {errorMessage && <div className="viewer-map-error" role="alert">{errorMessage}</div>}
         </div>
     );
