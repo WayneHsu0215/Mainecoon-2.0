@@ -2,6 +2,9 @@ import express from 'express';
 import controllers from '../controllers/index.js';
 import viteExpress from 'vite-express';
 import session from 'express-session';
+import uploads from '../controllers/uploads.js';
+import uploadConfig from '../config/upload.js';
+import dicomweb from '../controllers/dicomweb.js';
 
 const app = express();
 app.use(express.json());
@@ -26,9 +29,12 @@ app.use((req, res, next) => {
 
 // 使用你的控制器
 app.use('/api', controllers);
+app.use('/api/uploads', uploads);
+app.use('/api/dicomweb', dicomweb);
 
 const server = app.listen(3000, () => {
     console.log('Server is running on port 3000');
 });
+server.requestTimeout = uploadConfig.timeoutMs;
 
 viteExpress.bind(app, server);
